@@ -3,11 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        defaultSrc: ['self'],
+        scriptSrc: ['self', 'https://cdn.jsdelivr.net', 'https://www.googletagmanager.com'],
+        styleSrc: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
+        imgSrc: ['self', 'data:', 'https://*.cloudfront.net', 'https://via.placeholder.com', 'https://imagedelivery.net'],
+        connectSrc: ['self', 'https://genzz-backend.onrender.com'],
+        fontSrc: ['self', 'https://fonts.gstatic.com'],
+        mediaSrc: ['self', 'https://static.vecteezy.com']
+    ">
     <title>GenZZ Library - Admin Panel</title>
     <link rel="icon" href="./assets/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR-ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-YOUR-ID');
+    </script>
     <style>
         body {
             margin: 0;
@@ -17,25 +34,36 @@
             flex-direction: column;
             background: linear-gradient(135deg, #bfdbfe, #60a5fa);
             font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.4;
         }
         .header-section {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
         }
         .container {
             max-width: 1280px;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .logo-container {
-            display: inline-block;
+        .logo-container img {
+            width: 160px;
+            height: 60px;
         }
         .flex-space-x-4 {
             display: flex;
@@ -44,26 +72,12 @@
         }
         main {
             flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 1.25rem;
-            padding-bottom: 1.25rem;
+            padding: 1.25rem 0;
         }
-        .admin-card {
-            padding: 1.5rem;
-            margin-left: 1rem;
-            margin-right: 1rem;
-            width: 100%;
-            max-width: 64rem;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 25px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        .admin-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+        .admin-section {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
         h2 {
             font-size: 1.5rem;
@@ -71,245 +85,162 @@
             text-align: center;
             margin-bottom: 1rem;
             font-family: 'Poppins', sans-serif;
-        }
-        h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            font-family: 'Poppins', sans-serif;
-        }
-        p {
-            color: #4b5563;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .mb-8 {
-            margin-bottom: 2rem;
-        }
-        .grid-cols-1 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        @media (min-width: 768px) {
-            .md-grid-cols-2 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        input, select {
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .btn-access {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            padding: 0.9rem 2.8rem;
-            background: linear-gradient(90deg, #facc15, #f97316);
             color: #1e40af;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            width: 100%;
         }
-        @media (min-width: 768px) {
-            .btn-access.md-w-auto {
-                width: auto;
-            }
+        .admin-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .btn-access:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.5);
-            background: linear-gradient(90deg, #eab308, #ea580c);
+        .admin-form:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
         }
-        .btn-access::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.5s ease, height 0.5s ease;
+        .form-group {
+            margin-bottom: 1rem;
         }
-        .btn-access:hover::before {
-            width: 350px;
-            height: 350px;
-        }
-        .btn-access.text-sm {
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-        }
-        .btn-delete {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50px;
+        .form-group label {
+            display: block;
             font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
-            background: linear-gradient(90deg, #ef4444, #dc2626);
-            color: #ffffff;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1e40af;
         }
-        .btn-delete:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
-            background: linear-gradient(90deg, #dc2626, #b91c1c);
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            background: #fff;
+            transition: border-color 0.3s ease;
         }
-        .relative {
-            position: relative;
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
         }
-        .inline-flex {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-        .rounded-full {
-            border-radius: 9999px;
-        }
-        .peer:checked ~ .bg-blue-600 {
-            background-color: #2563eb;
-        }
-        .transition-colors {
-            transition: background-color 0.2s ease;
-        }
-        .w-11 {
-            width: 2.75rem;
-        }
-        .h-6 {
-            height: 1.5rem;
-        }
-        .bg-gray-200 {
-            background-color: #e5e7eb;
-        }
-        .absolute {
-            position: absolute;
-        }
-        .left-1 {
-            left: 0.25rem;
-        }
-        .top-1 {
-            top: 0.25rem;
-        }
-        .w-4 {
-            width: 1rem;
-        }
-        .h-4 {
-            height: 1rem;
-        }
-        .bg-white {
-            background-color: #ffffff;
-        }
-        .transition-transform {
-            transition: transform 0.2s ease;
-        }
-        .peer:checked ~ .translate-x-5 {
-            transform: translateX(1.25rem);
-        }
-        .text-xs {
-            font-size: 0.75rem;
-        }
-        .peer-checked\:hidden {
+        #cover-preview {
+            max-width: 150px;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 0.5rem;
             display: none;
         }
-        .peer-checked\:block {
-            display: block;
+        .btn-submit, .btn-logout {
+            display: inline-block;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            border: none;
+            cursor: pointer;
         }
-        .footer-section {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
+        .btn-submit:hover, .btn-logout:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #2563eb, #1e40af);
         }
-        .mb-0 {
-            margin-bottom: 0;
+        .books-list {
+            margin-top: 2rem;
         }
-        .table-header {
-            background: #f3f3f3;
+        .book-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .book-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
-        th, td {
-            border: 1px solid #d1d5db;
-            padding: 0.5rem;
-            text-align: left;
+        .book-item img {
+            width: 80px;
+            height: auto;
+            border-radius: 8px;
         }
-        .text-blue-600 {
-            color: #2563eb;
+        .book-item div {
+            flex-grow: 1;
         }
-        .text-blue-600:hover {
-            text-decoration: underline;
+        .book-item h5 {
+            font-size: 1.125rem;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: #1e40af;
         }
-        .overflow-x-auto {
-            overflow-x: auto;
+        .book-item p {
+            margin: 0.25rem 0;
+            color: #4b5563;
         }
+        .relative { position: relative; }
+        .inline-flex { display: inline-flex; align-items: center; cursor: pointer; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        .rounded-full { border-radius: 9999px; }
+        .peer:checked ~ .bg-blue-600 { background-color: #2563eb; }
+        .transition-colors { transition: background-color 0.2s ease; }
+        .w-11 { width: 2.75rem; }
+        .h-6 { height: 1.5rem; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .absolute { position: absolute; }
+        .left-1 { left: 0.25rem; }
+        .top-1 { top: 0.25rem; }
+        .w-4 { width: 1rem; }
+        .h-4 { height: 1rem; }
+        .bg-white { background-color: #ffffff; }
+        .transition-transform { transition: transform 0.2s ease; }
+        .peer:checked ~ .translate-x-5 { transform: translateX(1.25rem); }
+        .text-xs { font-size: 0.75rem; }
+        .peer-checked\:hidden { display: none; }
+        .peer-checked\:block { display: block; }
         .dark-mode {
             background: linear-gradient(135deg, #1e3a8a, #1e40af);
             color: #ffffff;
         }
-        .dark-mode .admin-card {
-            background: rgba(30, 30, 30, 0.98);
+        .dark-mode .admin-form, .dark-mode .book-item {
+            background: rgba(30, 30, 30, 0.95);
             color: #ffffff;
         }
         .dark-mode .header-section {
-            background: rgba(30, 30, 30, 0.95);
+            background: rgba(30, 30, 30, 0.1);
         }
-        .dark-mode .footer-section {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .dark-mode .table-header {
-            background: rgba(55, 65, 81, 0.8);
-        }
-        .dark-mode p {
-            color: #d1d5db;
-        }
-        .dark-mode input, .dark-mode select {
-            background: #374151;
-            border-color: #4b5563;
-            color: #f3f3f3;
-        }
-        .dark-mode .text-blue-600 {
+        .dark-mode .book-item h5, .dark-mode .form-group label {
             color: #60a5fa;
         }
-        .made-with-heart {
+        footer {
+            padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            text-align: center;
             font-family: 'Poppins', sans-serif;
-            color: #1e40af;
+            color: #fff;
+        }
+        .dark-mode footer {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
             transition: color 0.3s ease;
         }
-        .dark-mode .made-with-heart {
-            color: #f97316;
-        }
-        .made-with-heart:hover {
-            color: #f97316;
+        .footer-links a:hover {
+            color: #bfdbfe;
         }
     </style>
     <script>
@@ -317,161 +248,209 @@
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        async function checkAdminAccess() {
+            if (localStorage.getItem('isAdmin') !== 'true') {
+                Swal.fire({
+                    title: 'Access Denied!',
+                    text: 'Bhai, admin login kar pehle!',
+                    icon: 'error',
+                    confirmButtonText: 'Back to Home'
+                }).then(() => {
+                    window.location.href = './home.html';
+                });
+                return false;
+            }
+            return true;
+        }
+
+        async function loadBooks() {
+            try {
+                const response = await fetch(`${BASE_API_URL}/api/books`);
+                const books = await response.json();
+                const booksList = document.querySelector('.books-list');
+                booksList.innerHTML = '';
+                books.forEach(book => {
+                    const item = document.createElement('div');
+                    item.className = 'book-item';
+                    item.innerHTML = `
+                        <img src="${book.coverUrl}" alt="${book.title}">
+                        <div>
+                            <h5>${book.title}</h5>
+                            <p>Author: ${book.author}</p>
+                            <p>Class: ${book.class} | Exam: ${book.exam}</p>
+                        </div>
+                    `;
+                    booksList.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading books:', error);
+                Swal.fire('Error!', 'Books load nahi hui, bhai!', 'error');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async function () {
+            if (!(await checkAdminAccess())) return;
+
             const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
             if (darkModeEnabled) {
                 document.body.classList.add('dark-mode');
                 document.getElementById('darkModeToggle').checked = true;
             }
             document.getElementById('darkModeToggle').addEventListener('change', function () {
-                try {
-                    if (this.checked) {
-                        document.body.classList.add('dark-mode');
-                        localStorage.setItem('darkMode', 'enabled');
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        localStorage.setItem('darkMode', 'disabled');
-                    }
-                } catch (error) {
-                    console.error('Dark mode error:', error);
-                    Swal.fire('Error!', 'Failed to toggle dark mode.', 'error');
+                clickSound.play();
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('darkMode', 'disabled');
                 }
             });
 
-            if (localStorage.getItem('isAdmin') !== 'true') {
-                Swal.fire({
-                    title: 'Access Denied',
-                    text: 'Admin login required!',
-                    icon: 'error',
-                    confirmButtonText: 'Go to Login'
-                }).then(() => {
-                    window.location.href = './index.html';
-                });
-                return;
-            }
+            loadBooks();
 
-            await fetchBooks();
+            const coverInput = document.getElementById('cover');
+            const coverPreview = document.getElementById('cover-preview');
+            coverInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        coverPreview.src = e.target.result;
+                        coverPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    coverPreview.style.display = 'none';
+                }
+            });
 
             document.getElementById('book-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
-                const title = document.getElementById('book-title').value;
-                const author = document.getElementById('book-author').value;
-                const link = document.getElementById('book-link').value;
-                const image_url = document.getElementById('book-image').value;
-                const book_class = document.getElementById('book-class').value;
-                const exam = document.getElementById('book-exam').value;
+                clickSound.play();
+
+                const title = document.getElementById('title').value;
+                const author = document.getElementById('author').value;
+                const cover = document.getElementById('cover').files[0];
+                const pdfLink = document.getElementById('pdfLink').value;
+                const classType = document.getElementById('class').value;
+                const exam = document.getElementById('exam').value;
+
+                if (!title || !author || !pdfLink || !classType || !exam) {
+                    Swal.fire('Error!', 'Bhai, sab fields bhar de!', 'error');
+                    return;
+                }
+
+                let coverUrl = '';
+                if (cover) {
+                    const formData = new FormData();
+                    formData.append('cover', cover);
+                    try {
+                        const uploadResponse = await fetch(`${BASE_API_URL}/api/upload-cover`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const uploadResult = await uploadResponse.json();
+                        if (!uploadResult.success) {
+                            throw new Error(uploadResult.error);
+                        }
+                        coverUrl = uploadResult.coverUrl;
+                    } catch (error) {
+                        console.error('Image upload error:', error);
+                        Swal.fire('Error!', 'Cover image upload nahi hua, bhai!', 'error');
+                        return;
+                    }
+                }
+
                 try {
-                    clickSound.play();
                     const response = await fetch(`${BASE_API_URL}/api/books`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, author, link, image_url, class: book_class, exam })
+                        body: JSON.stringify({ title, author, coverUrl, pdfLink, class: classType, exam })
                     });
                     const result = await response.json();
                     if (result.success) {
-                        Swal.fire('Success!', 'Book added successfully!', 'success');
+                        Swal.fire('Success!', 'Book add ho gayi, bhai! 😎', 'success');
                         document.getElementById('book-form').reset();
-                        await fetchBooks();
+                        coverPreview.style.display = 'none';
+                        loadBooks();
                     } else {
-                        throw new Error(result.error || 'Failed to add book');
+                        Swal.fire('Error!', result.error || 'Book add nahi hui, bhai!', 'error');
                     }
                 } catch (error) {
-                    console.error('Error adding book:', error);
-                    Swal.fire('Error!', 'Failed to add book. Please try again.', 'error');
+                    console.error('Book add error:', error);
+                    Swal.fire('Error!', 'Server error, bhai! Baad mein try kar.', 'error');
                 }
             });
-        });
 
-        async function fetchBooks() {
-            try {
-                const response = await fetch(`${BASE_API_URL}/api/books`);
-                const books = await response.json();
-                if (!response.ok) {
-                    throw new Error('Failed to fetch books');
-                }
-                const bookTable = document.getElementById('book-table-body');
-                bookTable.innerHTML = '';
-                books.forEach(book => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="border px-4 py-2">${book.title}</td>
-                        <td class="border px-4 py-2">${book.author}</td>
-                        <td class="border px-4 py-2">${book.class}</td>
-                        <td class="border px-4 py-2">${book.exam}</td>
-                        <td class="border px-4 py-2"><a href="${book.link}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
-                        <td class="border px-4 py-2"><a href="${book.image_url}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
-                        <td class="border px-4 py-2">${book.clicks || 0}</td>
-                        <td class="border px-4 py-2">
-                            <button onclick="deleteBook('${book.id}')" class="btn-delete flex items-center justify-center">
-                                <i class="bi bi-trash mr-1"></i> Delete
-                            </button>
-                        </td>
-                    `;
-                    bookTable.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error fetching books:', error);
-                Swal.fire('Error!', 'Failed to load books. Please try again.', 'error');
-            }
-        }
-
-        async function deleteBook(bookId) {
-            try {
+            document.getElementById('logout').addEventListener('click', function () {
                 clickSound.play();
-                const result = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This will permanently delete the book!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'No, keep it'
+                localStorage.removeItem('isAdmin');
+                Swal.fire({
+                    title: 'Logged Out!',
+                    text: 'Bhai, tu ab admin nahi hai!',
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = './home.html';
                 });
-                if (!result.isConfirmed) return;
+            });
 
-                const response = await fetch(`${BASE_API_URL}/api/books/${bookId}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' }
+            document.querySelectorAll('.btn-submit, .btn-logout').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    clickSound.play();
+                    const rect = e.target.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    tsParticles.load('sparkles-' + Date.now(), {
+                        fullScreen: { enable: false },
+                        particles: {
+                            number: { value: 20 },
+                            color: { value: ['#3b82f6', '#2563eb'] },
+                            shape: { type: 'star' },
+                            opacity: { value: 0.8, animation: { enable: true, minimumValue: 0, speed: 2 } },
+                            size: { value: 5, random: true },
+                            move: {
+                                enable: true,
+                                speed: 10,
+                                direction: 'none',
+                                outModes: { default: 'destroy' }
+                            }
+                        },
+                        emitters: {
+                            position: { x, y },
+                            rate: { quantity: 20, delay: 0 }
+                        }
+                    });
                 });
-                const data = await response.json();
-                if (data.success) {
-                    Swal.fire('Success!', 'Book deleted successfully!', 'success');
-                    await fetchBooks();
-                } else {
-                    throw new Error(data.error || 'Failed to delete book');
-                }
-            } catch (error) {
-                console.error('Error deleting book:', error);
-                Swal.fire('Error!', 'Failed to delete book. Please try again.', 'error');
-            }
-        }
+            });
+
+            document.querySelectorAll('.footer-links a').forEach(link => {
+                link.addEventListener('click', () => clickSound.play());
+            });
+        });
     </script>
 </head>
 <body>
+    <video id="background-video" autoplay loop muted playsinline>
+        <source src="https://static.vecteezy.com/system/resources/previews/024/670/480/mp4/abstract-bright-blue-dna-molecular-structure-animated-background-motion-graphic-design-medical-clip-ultra-hd-4k-3840x2160-free-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     <header class="header-section">
         <div class="container">
             <nav>
                 <div class="logo-container">
-                    <svg width="160" height="60" viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg" class="main-logo">
-                        <g class="books-logo">
-                            <path d="M36 46H16V14C16 12.9 16.9 12 18 12H34C35.1 12 36 12.9 36 13V46Z" fill="none" stroke="currentColor" stroke-width="2" />
-                            <path d="M36 46H19V18C19 16.9 19.9 16 21 16H34C35.1 16 36 16.9 36 18V46Z" fill="none" stroke="currentColor" stroke-width="2" />
-                            <path d="M19 46H40V22C40 20.9 40.9 20 42 20H54C55.1 20 56 20.9 56 22V42C56 44.2 54.2 46 52 46H19Z" fill="none" stroke="currentColor" stroke-width="2" />
-                            <line x1="24" y1="20" x2="31" y2="20" stroke="currentColor" stroke-width="2" />
-                            <line x1="24" y1="24" x2="31" y2="24" stroke="currentColor" stroke-width="2" />
-                            <line x1="24" y1="28" x2="31" y2="28" stroke="currentColor" stroke-width="2" />
-                            <line x1="44" y1="26" x2="51" y2="26" stroke="currentColor" stroke-width="2" />
-                            <line x1="44" y1="30" x2="51" y2="30" stroke="currentColor" stroke-width="2" />
-                            <line x1="44" y1="34" x2="51" y2="34" stroke="currentColor" stroke-width="2" />
-                            <line x1="15" y1="46" x2="60" y2="46" stroke="currentColor" stroke-width="2" />
-                        </g>
-                        <text x="70" y="30" font-family="Poppins, sans-serif" font-size="16" font-weight="600" fill="currentColor">GEN-Z</text>
-                        <text x="70" y="42" font-family="Inter, sans-serif" font-size="11" fill="currentColor">PDF Library</text>
-                    </svg>
+                    <img src="./assets/logo.png" alt="GenZZ Library Logo">
                 </div>
                 <div class="flex-space-x-4">
-                    <a href="https://t.me/genzcoders1" class="btn-access text-sm" target="_blank" rel="noopener noreferrer">
-                        <i class="bi bi-chat-dots-fill mr-1"></i> Join Gen-Z Channel 🚀
-                    </a>
+                    <button id="logout" class="btn-logout">Logout</button>
                     <label class="relative inline-flex">
                         <input type="checkbox" id="darkModeToggle" class="sr-only peer">
                         <div class="w-11 h-6 bg-gray-200 rounded-full peer transition-colors">
@@ -486,65 +465,62 @@
         </div>
     </header>
     <main>
-        <div class="admin-card">
-            <h2>Admin Panel 🔒</h2>
-            <p>Manage books and stats for GenZZ Library! ✨</p>
-            <div class="mb-8">
+        <section class="admin-section">
+            <h2>Admin Panel 📚</h2>
+            <div class="admin-form">
                 <h3>Add New Book</h3>
-                <form id="book-form" class="grid-cols-1 md-grid-cols-2">
-                    <input id="book-title" type="text" placeholder="Book Title" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
-                    <input id="book-author" type="text" placeholder="Author" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
-                    <input id="book-link" type="url" placeholder="Google Drive Link" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
-                    <input id="book-image" type="url" placeholder="Image URL" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
-                    <select id="book-class" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
-                        <option value="" disabled selected>Select Class</option>
-                        <option value="9th">9th</option>
-                        <option value="10th">10th</option>
-                        <option value="11th">11th</option>
-                        <option value="12th">12th</option>
-                    </select>
-                    <select id="book-exam" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
-                        <option value="" disabled selected>Select Exam</option>
-                        <option value="Board">Board</option>
-                        <option value="JEE">JEE</option>
-                        <option value="NEET">NEET</option>
-                        <option value="OTHER">OTHER</option>
-                    </select>
-                    <div class="md-col-span-2 flex justify-center">
-                        <button type="submit" class="btn-access flex items-center justify-center w-full md-w-auto">
-                            <i class="bi bi-plus-circle mr-2"></i> Add Book
-                        </button>
+                <form id="book-form">
+                    <div class="form-group">
+                        <label for="title">Book Title</label>
+                        <input type="text" id="title" required>
                     </div>
+                    <div class="form-group">
+                        <label for="author">Author</label>
+                        <input type="text" id="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cover">Cover Image (jpg, jpeg, png)</label>
+                        <input type="file" id="cover" accept="image/jpeg,image/png">
+                        <img id="cover-preview" alt="Cover Preview">
+                    </div>
+                    <div class="form-group">
+                        <label for="pdfLink">PDF Link (Google Drive)</label>
+                        <input type="url" id="pdfLink" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="class">Class</label>
+                        <select id="class" required>
+                            <option value="">Select Class</option>
+                            <option value="all">All</option>
+                            <option value="11th">11th</option>
+                            <option value="12th">12th</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exam">Exam</label>
+                        <select id="exam" required>
+                            <option value="">Select Exam</option>
+                            <option value="all">All</option>
+                            <option value="JEE">JEE</option>
+                            <option value="NEET">NEET</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Add Book</button>
                 </form>
             </div>
-            <div>
-                <h3>Manage Books</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr class="table-header">
-                                <th class="border px-4 py-2 text-left">Title</th>
-                                <th class="border px-4 py-2 text-left">Author</th>
-                                <th class="border px-4 py-2 text-left">Class</th>
-                                <th class="border px-4 py-2 text-left">Exam</th>
-                                <th class="border px-4 py-2 text-left">Link</th>
-                                <th class="border px-4 py-2 text-left">Image</th>
-                                <th class="border px-4 py-2 text-left">Clicks</th>
-                                <th class="border px-4 py-2 text-left">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="book-table-body" class="text-gray-800 dark:text-gray-100">
-                            <!-- Books will be dynamically loaded here -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="books-list">
+                <h3>Existing Books</h3>
+                <!-- Books will be dynamically loaded here -->
             </div>
-        </div>
+        </section>
     </main>
-    <footer class="footer-section">
-        <div class="container">
-            <p class="made-with-heart mb-0">Made with ❤️ by GenZ-Coders</p>
+    <footer>
+        <div class="footer-links">
+            <a href="https://t.me/genzcoders1" target="_blank" rel="noopener noreferrer">Join Telegram</a>
+            <a href="https://github.com/genzz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="mailto:support@genzzlibrary.com">Contact Us</a>
         </div>
+        <p>Made with ❤️ by GenZZ-Coders | Video by Vecteezy</p>
     </footer>
 </body>
 </html>
