@@ -57,6 +57,23 @@
             width: 350px;
             height: 350px;
         }
+        .btn-delete {
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: #ffffff;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-delete:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
+            background: linear-gradient(90deg, #dc2626, #b91c1c);
+        }
         .dark-mode {
             background: linear-gradient(135deg, #1e3a8a, #1e40af);
             color: #ffffff;
@@ -70,6 +87,9 @@
         }
         .dark-mode .footer-section {
             background: rgba(255, 255, 255, 0.05);
+        }
+        .dark-mode .table-header {
+            background: rgba(55, 65, 81, 0.8);
         }
         .made-with-heart {
             font-family: 'Poppins', sans-serif;
@@ -85,6 +105,8 @@
     </style>
     <script>
         const BASE_API_URL = 'https://genzz-backend.onrender.com';
+        const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+        clickSound.volume = 0.3;
 
         document.addEventListener('DOMContentLoaded', async function () {
             // Apply dark mode
@@ -134,6 +156,7 @@
                 const book_class = document.getElementById('book-class').value;
                 const exam = document.getElementById('book-exam').value;
                 try {
+                    clickSound.play();
                     const response = await fetch(`${BASE_API_URL}/api/books`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -141,7 +164,7 @@
                     });
                     const result = await response.json();
                     if (result.success) {
-                        Swal.fire('Success!', 'Book added!', 'success');
+                        Swal.fire('Success!', 'Book added successfully!', 'success');
                         document.getElementById('book-form').reset();
                         await fetchBooks();
                     } else {
@@ -168,11 +191,14 @@
                     row.innerHTML = `
                         <td class="border px-4 py-2">${book.title}</td>
                         <td class="border px-4 py-2">${book.author}</td>
-                        <td class="border px-4 py-2"><a href="${book.link}" target="_blank" class="text-blue-600">View</a></td>
+                        <td class="border px-4 py-2">${book.class}</td>
+                        <td class="border px-4 py-2">${book.exam}</td>
+                        <td class="border px-4 py-2"><a href="${book.link}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+                        <td class="border px-4 py-2"><a href="${book.image_url}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
                         <td class="border px-4 py-2">${book.clicks || 0}</td>
                         <td class="border px-4 py-2">
-                            <button onclick="deleteBook('${book.id}')" class="text-red-600 hover:text-red-800">
-                                <i class="bi bi-trash"></i> Delete
+                            <button onclick="deleteBook('${book.id}')" class="btn-delete flex items-center justify-center">
+                                <i class="bi bi-trash mr-1"></i> Delete
                             </button>
                         </td>
                     `;
@@ -186,16 +212,27 @@
 
         async function deleteBook(bookId) {
             try {
+                clickSound.play();
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This will permanently delete the book!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, keep it'
+                });
+                if (!result.isConfirmed) return;
+
                 const response = await fetch(`${BASE_API_URL}/api/books/${bookId}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                const result = await response.json();
-                if (result.success) {
-                    Swal.fire('Success!', 'Book deleted!', 'success');
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire('Success!', 'Book deleted successfully!', 'success');
                     await fetchBooks();
                 } else {
-                    throw new Error(result.error || 'Failed to delete book');
+                    throw new Error(data.error || 'Failed to delete book');
                 }
             } catch (error) {
                 console.error('Error deleting book:', error);
@@ -231,7 +268,7 @@
                     <a href="https://t.me/genzcoders1" class="btn-access text-sm py-2 px-4" target="_blank" rel="noopener noreferrer">
                         <i class="bi bi-chat-dots-fill mr-1"></i> Join Gen-Z Channel 🚀
                     </a>
-                    <label class="relative inline-flex items-center cursor DAMAGE
+                    <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="darkModeToggle" class="sr-only peer">
                         <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 transition-colors">
                             <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 flex items-center justify-center text-xs">
@@ -249,51 +286,56 @@
     <main class="flex-grow flex items-center justify-center py-5">
         <div class="admin-card p-6 mx-4 w-full max-w-4xl">
             <h2 class="text-2xl font-semibold text-center mb-4 font-poppins">Admin Panel 🔒</h2>
-            <p class="text-center text-gray-600 mb-4">Manage books and stats for GenZZ Library! ✨</p>
+            <p class="text-center text-gray-600 mb-6 dark:text-gray-300">Manage books and stats for GenZZ Library! ✨</p>
             
             <!-- Book Upload Form -->
-            <div class="mb-6">
-                <h3 class="text-xl font-semibold mb-2">Add New Book</h3>
-                <form id="book-form" class="grid grid-cols-1 gap-4">
-                    <input id="book-title" type="text" placeholder="Book Title" class="border rounded-lg p-2" required>
-                    <input id="book-author" type="text" placeholder="Author" class="border rounded-lg p-2" required>
-                    <input id="book-link" type="url" placeholder="Google Drive Link" class="border rounded-lg p-2" required>
-                    <input id="book-image" type="url" placeholder="Image URL" class="border rounded-lg p-2" required>
-                    <select id="book-class" class="border rounded-lg p-2" required>
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3 font-poppins">Add New Book</h3>
+                <form id="book-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="book-title" type="text" placeholder="Book Title" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
+                    <input id="book-author" type="text" placeholder="Author" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
+                    <input id="book-link" type="url" placeholder="Google Drive Link" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
+                    <input id="book-image" type="url" placeholder="Image URL" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
+                    <select id="book-class" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
                         <option value="" disabled selected>Select Class</option>
                         <option value="9th">9th</option>
                         <option value="10th">10th</option>
                         <option value="11th">11th</option>
                         <option value="12th">12th</option>
                     </select>
-                    <select id="book-exam" class="border rounded-lg p-2" required>
+                    <select id="book-exam" class="border rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100" required>
                         <option value="" disabled selected>Select Exam</option>
                         <option value="Board">Board</option>
                         <option value="JEE">JEE</option>
                         <option value="NEET">NEET</option>
                         <option value="OTHER">OTHER</option>
                     </select>
-                    <button type="submit" class="btn-access flex items-center justify-center">
-                        <i class="bi bi-plus-circle mr-2"></i> Add Book
-                    </button>
+                    <div class="md:col-span-2 flex justify-center">
+                        <button type="submit" class="btn-access flex items-center justify-center w-full md:w-auto">
+                            <i class="bi bi-plus-circle mr-2"></i> Add Book
+                        </button>
+                    </div>
                 </form>
             </div>
 
             <!-- Book List Table -->
             <div>
-                <h3 class="text-xl font-semibold mb-2">Manage Books</h3>
+                <h3 class="text-xl font-semibold mb-3 font-poppins">Manage Books</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse">
                         <thead>
-                            <tr class="bg-gray-100 dark:bg-gray-700">
+                            <tr class="bg-gray-100 dark:bg-gray-700 table-header">
                                 <th class="border px-4 py-2 text-left">Title</th>
                                 <th class="border px-4 py-2 text-left">Author</th>
+                                <th class="border px-4 py-2 text-left">Class</th>
+                                <th class="border px-4 py-2 text-left">Exam</th>
                                 <th class="border px-4 py-2 text-left">Link</th>
+                                <th class="border px-4 py-2 text-left">Image</th>
                                 <th class="border px-4 py-2 text-left">Clicks</th>
-                                <th class="border px-4 py-2 text-left">Actions</th>
+                                <th class="border px-4 py-2 text-left">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="book-table-body">
+                        <tbody id="book-table-body" class="text-gray-800 dark:text-gray-100">
                             <!-- Books will be dynamically loaded here -->
                         </tbody>
                     </table>
@@ -308,7 +350,5 @@
             <p class="made-with-heart text-center mb-0">Made with ❤️ by GenZ-Coders</p>
         </div>
     </footer>
-
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9386128d2c78bfe7',t:'MTc0NjAwNTk3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

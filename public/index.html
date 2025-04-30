@@ -57,6 +57,39 @@
             width: 350px;
             height: 350px;
         }
+        .btn-info {
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            padding: 0.6rem 2rem;
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            color: #ffffff;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-info:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.5);
+            background: linear-gradient(90deg, #dc2626, #b91c1c);
+        }
+        .btn-info::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+        .btn-info:hover::before {
+            width: 300px;
+            height: 300px;
+        }
         .dark-mode {
             background: linear-gradient(135deg, #1e3a8a, #1e40af);
             color: #ffffff;
@@ -147,22 +180,7 @@
                 localStorage.setItem('accessTokenExpiry', result.expiry);
                 localStorage.setItem('shortUrl', result.shortUrl);
 
-                Swal.fire({
-                    title: 'Access Granted! 🎉',
-                    html: `Your ${duration} access key generated!<br><a href="${result.shortUrl}" target="_blank">${result.shortUrl}</a><br>Expires on: ${new Date(result.expiry).toLocaleString()}`,
-                    icon: 'success',
-                    confirmButtonText: 'Copy & Go',
-                    showCancelButton: true,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        navigator.clipboard.writeText(result.shortUrl).then(() => {
-                            window.location.href = './protected.html';
-                        }).catch(err => {
-                            console.error('Copy error:', err);
-                            Swal.fire('Error!', 'Failed to copy URL.', 'error');
-                        });
-                    }
-                });
+                window.location.href = result.shortUrl; // Redirect to short URL
             } catch (error) {
                 console.error('Key generation error:', error);
                 Swal.fire('Error!', 'Failed to generate key. Please try again.', 'error');
@@ -259,13 +277,16 @@
         <div class="access-card p-6 mx-4 w-full max-w-md">
             <h2 class="text-2xl font-semibold text-center mb-4 font-poppins">Unlock GenZZ Access 🔑</h2>
             <p class="text-center text-gray-600 mb-4">Get secure access for 24 or 48 hours! ✨</p>
-            <div class="flex flex-col gap-3">
-                <button onclick="generateKey('24hr')" class="btn-access flex items-center justify-center">
+            <div class="flex flex-col gap-3 items-center">
+                <button onclick="generateKey('24hr')" class="btn-access flex items-center justify-center w-full">
                     <i class="bi bi-clock mr-2"></i> 24 Hour Access ⏰
                 </button>
-                <button onclick="generateKey('48hr')" class="btn-access flex items-center justify-center">
+                <button onclick="generateKey('48hr')" class="btn-access flex items-center justify-center w-full">
                     <i class="bi bi-clock mr-2"></i> 48 Hour Access ⏳
                 </button>
+                <a href="https://t.me/genzcoders1" class="btn-info flex items-center justify-center w-3/4 text-sm" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-info-circle mr-2"></i> How to Generate Key
+                </a>
             </div>
         </div>
     </main>
@@ -276,5 +297,5 @@
             <p id="footer-text" class="made-with-heart text-center mb-0">Made with ❤️ by GenZ-Coders</p>
         </div>
     </footer>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9386128cce987bab',t:'MTc0NjAwNTk3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
