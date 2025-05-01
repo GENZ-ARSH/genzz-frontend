@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
-        defaultSrc: ['self'],
-        scriptSrc: ['self', 'https://cdn.jsdelivr.net', 'https://telegram.org', 'https://www.googletagmanager.com'],
-        styleSrc: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
-        imgSrc: ['self', 'data:', 'https://*.cloudfront.net', 'https://*.amazon.com', 'https://via.placeholder.com', 'https://imagedelivery.net', 'https://booksfy.in', 'https://imgv2-2-f.scribdassets.com'],
-        connectSrc: ['self', 'https://genzz-backend.onrender.com', 'https://linkcent.in'],
-        fontSrc: ['self', 'https://fonts.gstatic.com'],
-        mediaSrc: ['self', 'https://static.vecteezy.com']
+        default-src 'self';
+        script-src 'self' https://cdn.jsdelivr.net https://telegram.org https://www.googletagmanager.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        img-src 'self' data: https://*.cloudfront.net https://*.amazon.com https://via.placeholder.com https://imagedelivery.net https://booksfy.in https://imgv2-2-f.scribdassets.com https://freeimage.host;
+        connect-src 'self' https://genzz-backend.onrender.com https://linkcent.in https://freeimage.host;
+        font-src 'self' https://fonts.gstatic.com;
+        media-src 'self' https://static.vecteezy.com;
     ">
     <title>GenZZ Library - Admin Panel</title>
     <link rel="icon" href="./assets/favicon.ico">
@@ -23,7 +23,7 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-YOUR-ID');
+        gtag('config', 'G-YOUR-ID'); // Replace G-YOUR-ID with your actual Google Analytics ID
     </script>
     <style>
         body {
@@ -130,7 +130,7 @@
             margin-top: 0.5rem;
             display: none;
         }
-        .btn-submit, .btn-logout, .btn-access {
+        .btn-submit, .btn-logout, .btn-access, .btn-delete {
             display: inline-block;
             border-radius: 50px;
             font-family: 'Poppins', sans-serif;
@@ -144,9 +144,13 @@
             border: none;
             cursor: pointer;
         }
-        .btn-submit:hover, .btn-logout:hover, .btn-access:hover {
+        .btn-submit:hover, .btn-logout:hover, .btn-access:hover, .btn-delete:hover {
             transform: scale(1.05);
             background: linear-gradient(90deg, #eab308, #ea580c);
+        }
+        .btn-delete {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
         }
         .books-list {
             margin-top: 2rem;
@@ -187,7 +191,6 @@
         .inline-flex { display: inline-flex; align-items: center; cursor: pointer; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
         .rounded-full { border-radius: 9999px; }
-        .peer:checked ~ .bg-blue-600 { background-color: #2563eb; }
         .transition-colors { transition: background-color 0.2s ease; }
         .w-11 { width: 2.75rem; }
         .h-6 { height: 1.5rem; }
@@ -240,14 +243,20 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             transition: transform 0.3s ease;
+            animation: pulse 2s infinite ease-in-out;
         }
         #chatbot-button:hover {
             transform: scale(1.1);
         }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
         #chatbot-window {
             display: none;
-            width: 300px;
-            height: 400px;
+            width: 320px;
+            height: 450px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
@@ -257,14 +266,14 @@
         #chatbot-header {
             background: linear-gradient(90deg, #facc15, #f97316);
             color: #1e40af;
-            padding: 10px;
+            padding: 12px;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
             text-align: center;
         }
         #chatbot-messages {
             flex-grow: 1;
-            padding: 10px;
+            padding: 12px;
             overflow-y: auto;
             font-family: 'Inter', sans-serif;
         }
@@ -275,7 +284,7 @@
         #chatbot-input input {
             flex-grow: 1;
             border: none;
-            padding: 10px;
+            padding: 12px;
             font-family: 'Inter', sans-serif;
             background: transparent;
             color: inherit;
@@ -287,16 +296,16 @@
             background: linear-gradient(90deg, #facc15, #f97316);
             color: #1e40af;
             border: none;
-            padding: 10px;
+            padding: 12px 16px;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
         }
         .chatbot-message {
-            margin: 5px 0;
-            padding: 8px;
-            border-radius: 10px;
-            max-width: 80%;
+            margin: 6px 0;
+            padding: 10px;
+            border-radius: 12px;
+            max-width: 85%;
         }
         .chatbot-message.bot {
             background: #f97316;
@@ -317,6 +326,7 @@
         }
         .dark-mode footer {
             background: linear-gradient(135deg, #eab308, #ea580c);
+            color: #ffffff;
         }
         .footer-links {
             display: flex;
@@ -339,64 +349,101 @@
     </style>
     <script>
         const BASE_API_URL = 'https://genzz-backend.onrender.com';
+        const TELEGRAM_CHANNEL = 'https://t.me/genzcoders1';
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
-        // Error troubleshooting database
+        // Expanded error troubleshooting database
         const errors = {
             'cover image upload nahi hua': {
                 reason: 'Image upload failed due to invalid file format, size limit exceeded, or server error.',
-                solution: 'Ensure the file is JPG/PNG, under 5MB, and check your internet connection. Try again or contact support on Telegram: https://t.me/genzcoders1'
+                solution: 'Ensure the file is JPG/PNG, under 5MB, and check your internet connection. Try again or contact support on Telegram: ' + TELEGRAM_CHANNEL
             },
             'book add nahi hui': {
                 reason: 'Book addition failed due to missing fields, invalid PDF link, or server error.',
-                solution: 'Fill all required fields (title, author, PDF link, class, exam). Ensure PDF link is a valid Google Drive URL. Try again or contact support.'
+                solution: 'Fill all required fields (title, author, PDF link, class, exam). Ensure PDF link is a valid Google Drive URL. Try again or contact support on Telegram: ' + TELEGRAM_CHANNEL
             },
             'server error': {
                 reason: 'Server is down, overloaded, or there’s a network issue.',
-                solution: 'Wait a few minutes and retry. Check your internet connection. If the issue persists, contact support on Telegram.'
+                solution: 'Wait a few minutes and retry. Check your internet connection. If the issue persists, contact support on Telegram: ' + TELEGRAM_CHANNEL
             },
             'invalid csrf token': {
                 reason: 'CSRF token is missing or invalid, possibly due to session timeout or network interruption.',
-                solution: 'Log out and log in again via home.html chatbot using /admin. Clear browser cache if the issue continues.'
+                solution: 'Log out and log in again via home.html chatbot using /admin. Clear browser cache if the issue continues. Contact support on Telegram: ' + TELEGRAM_CHANNEL
             },
             'books load nahi hui': {
                 reason: 'Failed to fetch books due to server error or network issue.',
-                solution: 'Check your internet connection and refresh the page. If the issue persists, contact support on Telegram.'
+                solution: 'Check your internet connection and refresh the page. If the issue persists, contact support on Telegram: ' + TELEGRAM_CHANNEL
             },
             'failed to add book': {
                 reason: 'Server rejected the book addition due to validation errors or database issue.',
-                solution: 'Check all fields for correct data (e.g., valid URL for PDF). Ensure server is running and try again.'
+                solution: 'Check all fields for correct data (e.g., valid URL for PDF). Ensure server is running and try again. Contact support on Telegram: ' + TELEGRAM_CHANNEL
+            },
+            'delete book failed': {
+                reason: 'Book deletion failed due to server error or invalid book ID.',
+                solution: 'Ensure you have admin access and a stable internet connection. Try again or contact support on Telegram: ' + TELEGRAM_CHANNEL
+            },
+            'invalid pdf link': {
+                reason: 'The provided PDF link is not a valid Google Drive shareable link.',
+                solution: 'Ensure the link is from Google Drive and set to "Anyone with the link" access. Test the link in a browser first. Contact support on Telegram: ' + TELEGRAM_CHANNEL
+            },
+            'admin access denied': {
+                reason: 'Admin session expired or invalid credentials provided.',
+                solution: 'Log out and log in again via /admin in the home.html chatbot. Ensure correct password and stable connection. Contact support on Telegram: ' + TELEGRAM_CHANNEL
             }
         };
 
+        // Sanitize Input
         function sanitizeInput(input) {
             const div = document.createElement('div');
             div.textContent = input;
             return div.innerHTML;
         }
 
-        async function getCsrfToken() {
-            try {
-                const response = await fetch(`${BASE_API_URL}/api/csrf-token`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                return data.csrfToken;
-            } catch (error) {
-                console.error('Error fetching CSRF token:', error);
-                return null;
-            }
+        // Debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
         }
 
+        // Get CSRF Token
+        async function getCsrfToken() {
+            let retries = 3;
+            while (retries) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    const response = await fetch(`${BASE_API_URL}/api/csrf-token`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    const data = await response.json();
+                    if (!data.csrfToken) throw new Error('No CSRF token received');
+                    return data.csrfToken;
+                } catch (error) {
+                    retries -= 1;
+                    console.error('Error fetching CSRF token:', error);
+                    if (!retries) return null;
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+            return null;
+        }
+
+        // Check Admin Access
         async function checkAdminAccess() {
             if (localStorage.getItem('isAdmin') !== 'true') {
                 Swal.fire({
                     title: 'Access Denied!',
-                    text: 'Bhai, admin login kar pehle!',
+                    text: 'Bhai, admin login kar pehle! Redirecting to home...',
                     icon: 'error',
-                    confirmButtonText: 'Back to Home'
+                    confirmButtonText: 'Go to Home',
+                    customClass: { confirmButton: 'btn-access' }
                 }).then(() => {
                     window.location.href = './home.html';
                 });
@@ -408,11 +455,15 @@
                 if (!csrfToken) {
                     throw new Error('CSRF token fetch failed');
                 }
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 const response = await fetch(`${BASE_API_URL}/api/validate-admin`, {
                     method: 'GET',
                     headers: { 'X-CSRF-Token': csrfToken },
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 const result = await response.json();
                 if (!result.success) {
                     throw new Error(result.error || 'Admin validation failed');
@@ -422,9 +473,10 @@
                 console.error('Admin validation error:', error);
                 Swal.fire({
                     title: 'Access Denied!',
-                    text: 'Bhai, admin session expire ho gaya ya invalid hai!',
+                    text: 'Bhai, admin session expire ho gaya ya invalid hai! Contact support: ' + TELEGRAM_CHANNEL,
                     icon: 'error',
-                    confirmButtonText: 'Back to Home'
+                    confirmButtonText: 'Go to Home',
+                    customClass: { confirmButton: 'btn-access' }
                 }).then(() => {
                     localStorage.removeItem('isAdmin');
                     window.location.href = './home.html';
@@ -433,9 +485,18 @@
             }
         }
 
+        // Load Books
         async function loadBooks() {
             try {
-                const response = await fetch(`${BASE_API_URL}/api/books`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const response = await fetch(`${BASE_API_URL}/api/books`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error('Failed to fetch books');
                 const books = await response.json();
                 const booksList = document.querySelector('.books-list');
                 booksList.innerHTML = '';
@@ -443,11 +504,11 @@
                     const item = document.createElement('div');
                     item.className = 'book-item';
                     item.innerHTML = `
-                        <img src="${book.image_url}" alt="${book.title}">
+                        <img src="${book.image_url}" alt="${book.title}" loading="lazy">
                         <div>
                             <h5>${book.title}</h5>
-                            <p>Author: ${book.author}</p>
-                            <p>Class: ${book.class} | Exam: ${book.exam}</p>
+                            <p>Author: ${book.author || 'Unknown'}</p>
+                            <p>Class: ${book.class || 'General'} | Exam: ${book.exam || 'General'}</p>
                             <button class="btn-delete" data-id="${book.id}">Delete</button>
                         </div>
                     `;
@@ -459,36 +520,78 @@
                     button.addEventListener('click', async () => {
                         clickSound.play();
                         const bookId = button.dataset.id;
+                        const confirmDelete = await Swal.fire({
+                            title: 'Are you sure?',
+                            text: 'Book delete karne ke baad wapas nahi aayegi!',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Haan, delete kar!',
+                            cancelButtonText: 'Nahi, cancel kar',
+                            customClass: { confirmButton: 'btn-access', cancelButton: 'btn-access' }
+                        });
+                        if (!confirmDelete.isConfirmed) return;
+
                         const csrfToken = await getCsrfToken();
                         if (!csrfToken) {
-                            Swal.fire('Error!', 'Security issue, bhai! Try again.', 'error');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Security issue, bhai! Try again or contact: ' + TELEGRAM_CHANNEL,
+                                icon: 'error',
+                                customClass: { confirmButton: 'btn-access' }
+                            });
                             return;
                         }
                         try {
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 5000);
                             const response = await fetch(`${BASE_API_URL}/api/books/${bookId}`, {
                                 method: 'DELETE',
                                 headers: { 'X-CSRF-Token': csrfToken },
-                                credentials: 'include'
+                                credentials: 'include',
+                                signal: controller.signal
                             });
+                            clearTimeout(timeoutId);
                             if (response.ok) {
-                                Swal.fire('Success!', 'Book delete ho gayi!', 'success');
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Book delete ho gayi! 😎',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                                 loadBooks();
                             } else {
                                 const result = await response.json();
-                                Swal.fire('Error!', result.error || 'Book delete nahi hui, bhai!', 'error');
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: result.error || 'Book delete nahi hui, bhai! Contact: ' + TELEGRAM_CHANNEL,
+                                    icon: 'error',
+                                    customClass: { confirmButton: 'btn-access' }
+                                });
                             }
                         } catch (error) {
                             console.error('Delete book error:', error);
-                            Swal.fire('Error!', 'Server error, bhai! Baad mein try kar.', 'error');
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Server error, bhai! Baad mein try kar ya Telegram pe bol: ' + TELEGRAM_CHANNEL,
+                                icon: 'error',
+                                customClass: { confirmButton: 'btn-access' }
+                            });
                         }
                     });
                 });
             } catch (error) {
                 console.error('Error loading books:', error);
-                Swal.fire('Error!', 'Books load nahi hui, bhai!', 'error');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Books load nahi hui, bhai! Check internet ya Telegram pe bol: ' + TELEGRAM_CHANNEL,
+                    icon: 'error',
+                    customClass: { confirmButton: 'btn-access' }
+                });
             }
         }
 
+        // Add Chatbot Message
         function addChatbotMessage(message, isBot = false) {
             const messages = document.getElementById('chatbot-messages');
             const div = document.createElement('div');
@@ -498,6 +601,7 @@
             messages.scrollTop = messages.scrollHeight;
         }
 
+        // Handle Chatbot Input
         async function handleChatbotInput() {
             const input = document.getElementById('chatbot-input-text');
             const message = input.value.trim();
@@ -506,17 +610,19 @@
             addChatbotMessage(message);
             input.value = '';
 
-            if (message.toLowerCase() === '/manage') {
+            const lowerMessage = message.toLowerCase();
+
+            if (lowerMessage === '/manage') {
                 addChatbotMessage(`
                     📚 **Admin Management Guide** 📚
                     1. **Books Upload Karne Ka Tareeka**:
                        - "Add New Book" form mein details bharo:
-                         - Title: Book ka naam.
-                         - Author: Lekhak ka naam.
-                         - Cover Image: JPG/PNG file (optional).
-                         - PDF Link: Google Drive ka shareable link.
-                         - Class: All, 10th, 11th, 12th mein se chuno.
-                         - Exam: All, Board, JEE, NEET mein se chuno.
+                         - Title: Book ka naam (required).
+                         - Author: Lekhak ka naam (required).
+                         - Cover Image: JPG/PNG file, <5MB (optional).
+                         - PDF Link: Google Drive ka shareable link (required).
+                         - Class: All, 10th, 11th, 12th mein se chuno (required).
+                         - Exam: All, Board, JEE, NEET mein se chuno (required).
                        - "Add Book" button pe click karo.
                        - Success message aayega agar book add hui.
                     2. **Website Ke Features**:
@@ -524,30 +630,42 @@
                        - **Dark Mode**: Top right toggle se switch karo.
                        - **Chatbot**: Home pe /admin se login, yahan queries bhejo.
                        - **Admin Panel**: Books add/delete karo, list dekho.
-                       - **Key Validation**: Users ke liye access key chahiye.
+                       - **Key Validation**: Users ke liye access key chahiye (24hr/48hr).
                     3. **Tips**:
                        - PDF link shareable hona chahiye (Google Drive se "Anyone with link").
                        - Image size chhota rakho (<5MB) for faster upload.
-                       - Issue ho toh Telegram pe ping karo: https://t.me/genzcoders1
+                       - Issue ho toh Telegram pe ping karo: ${TELEGRAM_CHANNEL}
                 `, true);
                 return;
             }
 
-            if (message.toLowerCase() === '/help') {
+            if (lowerMessage === '/help') {
                 addChatbotMessage(`
                     🆘 **Admin Chatbot Help** 🆘
                     Available Commands:
                     - **/manage**: Books upload aur website features ki info.
                     - **/troubleshoot <error>**: Error ka reason aur solution (e.g., /troubleshoot book add nahi hui).
+                    - **/list-errors**: All possible errors ka list.
                     - **/help**: Yeh help message.
                     Other Queries:
                     - Naam set karo: "Name: TeraNaam"
                     - Query ya feedback bhejo, team ko forward hoga.
+                    Try asking specific errors or check /list-errors!
                 `, true);
                 return;
             }
 
-            if (message.toLowerCase().startsWith('/troubleshoot')) {
+            if (lowerMessage === '/list-errors') {
+                let errorList = '⚠️ **All Possible Errors** ⚠️\n';
+                for (const [error, { reason, solution }] of Object.entries(errors)) {
+                    errorList += `- ${error}: ${reason}\n  Solution: ${solution}\n`;
+                }
+                errorList += 'More help needed? Ping us on Telegram: ' + TELEGRAM_CHANNEL;
+                addChatbotMessage(errorList, true);
+                return;
+            }
+
+            if (lowerMessage.startsWith('/troubleshoot')) {
                 const query = message.slice(13).trim().toLowerCase();
                 if (!query) {
                     addChatbotMessage('Bhai, error message ya keyword daal (e.g., /troubleshoot book add nahi hui)', true);
@@ -569,9 +687,9 @@
 
                 if (!found) {
                     addChatbotMessage(`
-                        😕 **Error Nahi Mila** 😕
-                        Tera error database mein nahi hai. Exact error message daal ke try kar.
-                        Ya Telegram pe team se baat kar: https://t.me/genzcoders1
+                        😕 **Error Nahi Mila** ��
+                        Tera error database mein nahi hai. Exact error message daal ke try kar (check /list-errors).
+                        Ya Telegram pe team se baat kar: ${TELEGRAM_CHANNEL}
                     `, true);
                 }
                 return;
@@ -588,9 +706,11 @@
             try {
                 const csrfToken = await getCsrfToken();
                 if (!csrfToken) {
-                    addChatbotMessage('Security issue, bhai! Try again ya Telegram pe contact kar.', true);
+                    addChatbotMessage('Security issue, bhai! Try again ya Telegram pe contact kar: ' + TELEGRAM_CHANNEL, true);
                     return;
                 }
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 const response = await fetch(`${BASE_API_URL}/api/reviews`, {
                     method: 'POST',
                     headers: {
@@ -598,17 +718,19 @@
                         'X-CSRF-Token': csrfToken
                     },
                     body: JSON.stringify({ name, message, _csrf: csrfToken }),
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
                 const result = await response.json();
                 if (result.success) {
                     addChatbotMessage('Query bhej di, bhai! Team jaldi reply karegi. 😊', true);
                 } else {
-                    addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar!`, true);
+                    addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar ya Telegram pe bol: ${TELEGRAM_CHANNEL}`, true);
                 }
             } catch (error) {
                 console.error('Error submitting query:', error);
-                addChatbotMessage('Server error, bhai. Thodi der baad try kar ya Telegram pe chill kar! 😎', true);
+                addChatbotMessage('Server error, bhai. Thodi der baad try kar ya Telegram pe chill kar: ${TELEGRAM_CHANNEL}', true);
             }
         }
 
@@ -622,13 +744,8 @@
             }
             document.getElementById('darkModeToggle').addEventListener('change', function () {
                 clickSound.play();
-                if (this.checked) {
-                    document.body.classList.add('dark-mode');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
+                document.body.classList.toggle('dark-mode', this.checked);
+                localStorage.setItem('darkMode', this.checked ? 'enabled' : 'disabled');
             });
 
             loadBooks();
@@ -638,6 +755,28 @@
             coverInput.addEventListener('change', function () {
                 const file = this.files[0];
                 if (file) {
+                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Bhai, sirf JPG ya PNG file upload kar!',
+                            icon: 'error',
+                            customClass: { confirmButton: 'btn-access' }
+                        });
+                        this.value = '';
+                        coverPreview.style.display = 'none';
+                        return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Bhai, image size 5MB se kam hona chahiye!',
+                            icon: 'error',
+                            customClass: { confirmButton: 'btn-access' }
+                        });
+                        this.value = '';
+                        coverPreview.style.display = 'none';
+                        return;
+                    }
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         coverPreview.src = e.target.result;
@@ -653,21 +792,43 @@
                 e.preventDefault();
                 clickSound.play();
 
-                const title = document.getElementById('title').value;
-                const author = document.getElementById('author').value;
+                const title = document.getElementById('title').value.trim();
+                const author = document.getElementById('author').value.trim();
                 const cover = document.getElementById('cover').files[0];
-                const pdfLink = document.getElementById('pdfLink').value;
+                const pdfLink = document.getElementById('pdfLink').value.trim();
                 const classType = document.getElementById('class').value;
                 const exam = document.getElementById('exam').value;
 
                 if (!title || !author || !pdfLink || !classType || !exam) {
-                    Swal.fire('Error!', 'Bhai, sab fields bhar de!', 'error');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Bhai, sab fields bhar de!',
+                        icon: 'error',
+                        customClass: { confirmButton: 'btn-access' }
+                    });
+                    return;
+                }
+
+                // Validate Google Drive URL
+                const googleDriveRegex = /^https:\/\/(drive\.google\.com\/file\/d\/|docs\.google\.com\/.*\/d\/|drive\.google\.com\/open\?id=)/;
+                if (!googleDriveRegex.test(pdfLink)) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Bhai, valid Google Drive shareable link daal!',
+                        icon: 'error',
+                        customClass: { confirmButton: 'btn-access' }
+                    });
                     return;
                 }
 
                 const csrfToken = await getCsrfToken();
                 if (!csrfToken) {
-                    Swal.fire('Error!', 'Security issue, bhai! Try again.', 'error');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Security issue, bhai! Try again or contact: ' + TELEGRAM_CHANNEL,
+                        icon: 'error',
+                        customClass: { confirmButton: 'btn-access' }
+                    });
                     return;
                 }
 
@@ -675,12 +836,16 @@
                 if (cover) {
                     const formData = new FormData();
                     formData.append('source', cover);
-                    formData.append('key', 'your_freeimage_api_key'); // Replace with actual FREEIMAGE_API_KEY
+                    formData.append('key', 'YOUR_FREEIMAGE_API_KEY'); // Replace with your actual FreeImage API key
                     try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 10000);
                         const uploadResponse = await fetch('https://freeimage.host/api/1/upload', {
                             method: 'POST',
-                            body: formData
+                            body: formData,
+                            signal: controller.signal
                         });
+                        clearTimeout(timeoutId);
                         const uploadResult = await uploadResponse.json();
                         if (!uploadResult.image || !uploadResult.image.url) {
                             throw new Error(uploadResult.error || 'Image upload failed');
@@ -688,12 +853,19 @@
                         image_url = uploadResult.image.url;
                     } catch (error) {
                         console.error('Image upload error:', error);
-                        Swal.fire('Error!', 'Cover image upload nahi hua, bhai! Try again.', 'error');
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Cover image upload nahi hua, bhai! Try again or contact: ' + TELEGRAM_CHANNEL,
+                            icon: 'error',
+                            customClass: { confirmButton: 'btn-access' }
+                        });
                         return;
                     }
                 }
 
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
                     const response = await fetch(`${BASE_API_URL}/api/books`, {
                         method: 'POST',
                         headers: {
@@ -701,20 +873,38 @@
                             'X-CSRF-Token': csrfToken
                         },
                         body: JSON.stringify({ title, author, link: pdfLink, image_url, class: classType, exam, _csrf: csrfToken }),
-                        credentials: 'include'
+                        credentials: 'include',
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     const result = await response.json();
                     if (result.success) {
-                        Swal.fire('Success!', 'Book add ho gayi, bhai! 😎', 'success');
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Book add ho gayi, bhai! 😎',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                         document.getElementById('book-form').reset();
                         coverPreview.style.display = 'none';
                         loadBooks();
                     } else {
-                        Swal.fire('Error!', result.error || 'Book add nahi hui, bhai!', 'error');
+                        Swal.fire({
+                            title: 'Error!',
+                            text: result.error || 'Book add nahi hui, bhai! Contact: ' + TELEGRAM_CHANNEL,
+                            icon: 'error',
+                            customClass: { confirmButton: 'btn-access' }
+                        });
                     }
                 } catch (error) {
                     console.error('Book add error:', error);
-                    Swal.fire('Error!', 'Server error, bhai! Baad mein try kar.', 'error');
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Server error, bhai! Baad mein try kar ya Telegram pe bol: ' + TELEGRAM_CHANNEL,
+                        icon: 'error',
+                        customClass: { confirmButton: 'btn-access' }
+                    });
                 }
             });
 
@@ -723,11 +913,15 @@
                 try {
                     const csrfToken = await getCsrfToken();
                     if (csrfToken) {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 5000);
                         await fetch(`${BASE_API_URL}/api/logout`, {
                             method: 'POST',
                             headers: { 'X-CSRF-Token': csrfToken },
-                            credentials: 'include'
+                            credentials: 'include',
+                            signal: controller.signal
                         });
+                        clearTimeout(timeoutId);
                     }
                 } catch (error) {
                     console.error('Logout error:', error);
@@ -749,21 +943,28 @@
                 const window = document.getElementById('chatbot-window');
                 window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
                 if (window.style.display === 'flex') {
-                    addChatbotMessage('Welcome, bhai! /manage se books upload aur website info le, /troubleshoot se error fix kar, ya /help type kar.', true);
+                    addChatbotMessage(`
+                        Yo bhai, welcome to GenZZ Admin Bot! ��
+                        Try these commands:
+                        - /manage: Books upload aur website info
+                        - /troubleshoot <error>: Fix errors (e.g., /troubleshoot book add nahi hui)
+                        - /list-errors: All possible errors
+                        - /help: Full command list
+                    `, true);
                 }
             });
-            document.getElementById('chatbot-input-text').addEventListener('keypress', function (e) {
+            document.getElementById('chatbot-input-text').addEventListener('keypress', debounce(function (e) {
                 if (e.key === 'Enter') {
                     clickSound.play();
                     handleChatbotInput();
                 }
-            });
+            }, 300));
             document.getElementById('chatbot-input-button').addEventListener('click', function () {
                 clickSound.play();
                 handleChatbotInput();
             });
 
-            document.querySelectorAll('.btn-submit, .btn-logout, .btn-access').forEach(button => {
+            document.querySelectorAll('.btn-submit, .btn-logout, .btn-access, .btn-delete').forEach(button => {
                 button.addEventListener('click', function (e) {
                     clickSound.play();
                     const rect = e.target.getBoundingClientRect();
@@ -835,20 +1036,20 @@
                 <form id="book-form">
                     <div class="form-group">
                         <label for="title">Book Title</label>
-                        <input type="text" id="title" required>
+                        <input type="text" id="title" placeholder="Enter book title" required>
                     </div>
                     <div class="form-group">
                         <label for="author">Author</label>
-                        <input type="text" id="author" required>
+                        <input type="text" id="author" placeholder="Enter author name" required>
                     </div>
                     <div class="form-group">
-                        <label for="cover">Cover Image (jpg, jpeg, png)</label>
+                        <label for="cover">Cover Image (JPG/PNG, <5MB)</label>
                         <input type="file" id="cover" accept="image/jpeg,image/png">
                         <img id="cover-preview" alt="Cover Preview">
                     </div>
                     <div class="form-group">
                         <label for="pdfLink">PDF Link (Google Drive)</label>
-                        <input type="url" id="pdfLink" required>
+                        <input type="url" id="pdfLink" placeholder="Enter Google Drive shareable link" required>
                     </div>
                     <div class="form-group">
                         <label for="class">Class</label>
@@ -895,10 +1096,12 @@
     <footer>
         <div class="footer-links">
             <a href="https://t.me/genzcoders1" target="_blank" rel="noopener noreferrer">Join Telegram</a>
-            <a href="https://github.com/genz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="mailto:support@genzzlibrary.com">Contact Us</a>
+            <a href="https://github.com/genzz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="/cdn-cgi/l/email-protection#390a0c0909160b0d391e1c17030315101b0b180b00571a1614">Contact Us</a>
         </div>
         <p>Made with ❤️ by GenZZ-Coders | Video by Vecteezy</p>
     </footer>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'939101f9c824bd41',t:'MTc0NjEyMDYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

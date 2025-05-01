@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
-        default-src: ['self'];
-        script-src: ['self', 'https://cdn.jsdelivr.net', 'https://telegram.org', 'https://www.googletagmanager.com'];
-        style-src: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'];
-        img-src: ['self', 'data:', 'https://*.cloudfront.net', 'https://*.amazon.com', 'https://via.placeholder.com', 'https://booksfy.in', 'https://imgv2-2-f.scribdassets.com', 'https://freeimage.host'];
-        connect-src: ['self', 'https://genzz-backend.onrender.com', 'https://linkcent.in', 'https://freeimage.host'];
-        font-src: ['self', 'https://fonts.gstatic.com'];
-        media-src: ['self', 'https://static.vecteezy.com'];
+        default-src 'self';
+        script-src 'self' https://cdn.jsdelivr.net https://telegram.org https://www.googletagmanager.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        img-src 'self' data: https://*.cloudfront.net https://*.amazon.com https://via.placeholder.com https://booksfy.in https://imgv2-2-f.scribdassets.com https://freeimage.host;
+        connect-src 'self' https://genzz-backend.onrender.com https://linkcent.in https://freeimage.host;
+        font-src 'self' https://fonts.gstatic.com;
+        media-src 'self' https://static.vecteezy.com;
     ">
     <title>GenZZ Library - Home</title>
     <link rel="icon" href="./assets/favicon.ico">
@@ -19,7 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Remove Google Analytics if not used -->
     <style>
         body {
             margin: 0;
@@ -455,7 +454,7 @@
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
-        // FAQ database
+        // Expanded FAQ database
         const faqs = {
             'how to download': {
                 question: 'How do I download books?',
@@ -476,6 +475,38 @@
             'how to contact support': {
                 question: 'How do I contact support?',
                 answer: 'Telegram channel join karo: ' + TELEGRAM_CHANNEL + ' ya email karo: support@genzzlibrary.com. Telegram pe jaldi reply milta hai!'
+            },
+            'books not loading': {
+                question: 'Why are books not loading?',
+                answer: 'Internet check karo ya page refresh karo. Key expire ho gaya toh naya banaye. Issue rahe toh Telegram pe bataye: ' + TELEGRAM_CHANNEL
+            },
+            'how to access admin': {
+                question: 'How do I access the admin panel?',
+                answer: 'Sirf authorized admins ke liye. Chatbot mein /admin type karo aur password daalo. Queries ke liye Telegram pe contact: ' + TELEGRAM_CHANNEL
+            },
+            'how to join telegram': {
+                question: 'How do I join the Telegram community?',
+                answer: 'Group mein join karo: https://t.me/genzzthinks ya channel pe aao: ' + TELEGRAM_CHANNEL + '. Updates aur support ke liye perfect hai!'
+            },
+            'how to suggest books': {
+                question: 'Can I suggest books for the library?',
+                answer: 'Haan, bhai! Telegram group mein suggestion daal do: https://t.me/genzzthinks ya owner ko directly bol: @just_arsh1. Hum jaldi review karenge.'
+            },
+            'safe to use': {
+                question: 'Is GenZZ Library safe to use?',
+                answer: '100% safe, bro! Secure keys aur CSRF protection hai. Privacy ka full dhyaan rakhte hain. Doubt ho toh Telegram pe clarify kar: ' + TELEGRAM_CHANNEL
+            },
+            'slow loading': {
+                question: 'Why is the library loading slowly?',
+                answer: 'Internet speed check karo ya low-bandwidth mode try karo. Cache clear karne se bhi help hoti hai. Issue rahe toh Telegram pe ping: ' + TELEGRAM_CHANNEL
+            },
+            'browser compatibility': {
+                question: 'Which browsers are supported?',
+                answer: 'Chrome, Firefox, Edge, aur Safari pe smooth chalta hai. Latest version use karo. Mobile browsers bhi kaam karte hain. Issue ho toh Telegram pe bol: ' + TELEGRAM_CHANNEL
+            },
+            'key expiration': {
+                question: 'How long does a key last?',
+                answer: '24hr ya 48hr key choose karo. Time khatam hone pe naya key generate karna padega. Reminder ke liye Telegram join kar: ' + TELEGRAM_CHANNEL
             }
         };
 
@@ -516,6 +547,7 @@
                     });
                     clearTimeout(timeoutId);
                     const data = await response.json();
+                    if (!data.csrfToken) throw new Error('No CSRF token received');
                     return data.csrfToken;
                 } catch (error) {
                     retries -= 1;
@@ -531,7 +563,7 @@
         async function validateKey() {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
                 const response = await fetch(`${BASE_API_URL}/api/validate-key`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -566,6 +598,13 @@
                 confirmButtonText: 'Login',
                 showCancelButton: true,
                 cancelButtonText: 'Cancel',
+                backdrop: `
+                    rgba(0,0,123,0.4)
+                    url("https://sweetalert2.github.io/images/nyan-cat.gif")
+                    left top
+                    no-repeat
+                `,
+                customClass: { popup: 'animated bounceIn', confirmButton: 'btn-access' },
                 preConfirm: async () => {
                     const password = sanitizeInput(document.getElementById('admin-password').value);
                     const csrfToken = document.getElementById('csrf-token').value;
@@ -606,7 +645,13 @@
                 clickSound.play();
                 localStorage.setItem('isAdmin', 'true');
                 if (!isInitialLoad) {
-                    Swal.fire('Success!', 'Admin access granted! Redirecting...', 'success').then(() => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Admin access granted! Redirecting...',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
                         window.location.href = './admin.html';
                     });
                 }
@@ -635,6 +680,7 @@
                 showCancelButton: true,
                 confirmButtonText: 'Yes, I’m an admin',
                 cancelButtonText: 'No, I’m a user',
+                customClass: { confirmButton: 'btn-access' }
             });
 
             if (isAdminAttempt.isConfirmed) {
@@ -679,9 +725,10 @@
                 console.error('Key validation error:', error);
                 Swal.fire({
                     title: 'BHAI KEY GENERATE KRLE 😜',
-                    text: 'Your key is invalid or expired. Generate a new one!',
+                    text: 'Your key is invalid or expired. Generate a new one! Contact support if issue persists: ' + TELEGRAM_CHANNEL,
                     icon: 'error',
                     confirmButtonText: 'Go to Key Generator',
+                    customClass: { confirmButton: 'btn-access' }
                 }).then(() => {
                     localStorage.clear();
                     window.location.href = './index.html';
@@ -693,11 +740,15 @@
         async function loadBooks(page = 1, limit = 12) {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
                 const response = await fetch(`${BASE_API_URL}/api/books?page=${page}&limit=${limit}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     signal: controller.signal,
                 });
                 clearTimeout(timeoutId);
+                if (!response.ok) throw new Error('Failed to fetch books');
                 const books = await response.json();
 
                 const booksGrid = document.querySelector('.books-grid');
@@ -706,13 +757,13 @@
                     card.className = 'book-card';
                     card.dataset.id = book.id;
                     card.dataset.title = book.title;
-                    card.dataset.class = book.class;
-                    card.dataset.exam = book.exam;
+                    card.dataset.class = book.class || 'general';
+                    card.dataset.exam = book.exam || 'general';
                     card.dataset.category = book.category || 'General';
                     card.innerHTML = `
-                        <img src="${book.image_url}" class="book-cover" alt="${book.title}">
+                        <img src="${book.image_url}" class="book-cover" alt="${book.title}" loading="lazy">
                         <h5 class="book-title">${book.title}</h5>
-                        <p class="book-author">${book.author}</p>
+                        <p class="book-author">${book.author || 'Unknown'}</p>
                         <a href="${book.link}" target="_blank" class="btn-download">Download PDF</a>
                     `;
                     booksGrid.appendChild(card);
@@ -735,6 +786,8 @@
                     title: 'Error!',
                     text: 'Books load nahi hui, bhai! Check internet ya Telegram pe bol: ' + TELEGRAM_CHANNEL,
                     icon: 'error',
+                    confirmButtonText: 'Ok',
+                    customClass: { confirmButton: 'btn-access' }
                 });
             }
         }
@@ -782,7 +835,7 @@
             const lowerMessage = message.toLowerCase();
 
             if (lowerMessage === '/admin') {
-                addChatbotMessage('Bhai, admin banne ke liye password daal! ��', true);
+                addChatbotMessage('Bhai, admin banne ke liye password daal! 😎', true);
                 const adminSuccess = await promptAdminLogin();
                 if (!adminSuccess) {
                     addChatbotMessage('Admin login cancel kiya. Koi na, books dekh le! 📚', true);
@@ -818,9 +871,20 @@
                     - **/links**: Telegram group, channel, aur owner ke links.
                     - **/contact**: Owner se direct contact karo.
                     - **/admin**: Admin panel access (password required).
+                    - **/faq**: List all FAQs.
                     - **/help**: Yeh help message.
                     Ask anything like "how to download" ya set name: "Name: TeraNaam"
                 `, true);
+                return;
+            }
+
+            if (lowerMessage === '/faq') {
+                let faqList = '📚 **All FAQs** 📚\n';
+                for (const faq of Object.values(faqs)) {
+                    faqList += `- ${faq.question}\n`;
+                }
+                faqList += 'Ask any of these ya Telegram pe chill: ' + TELEGRAM_CHANNEL;
+                addChatbotMessage(faqList, true);
                 return;
             }
 
@@ -932,6 +996,7 @@
                         - /links for Telegram group, channel, aur owner
                         - /contact to reach the boss
                         - /admin for admin access
+                        - /faq to list all FAQs
                         - /help for all commands
                     `, true);
                 }
@@ -1076,9 +1141,11 @@
         <div class="footer-links">
             <a href="https://t.me/genzcoders1" target="_blank" rel="noopener noreferrer">Join Telegram</a>
             <a href="https://github.com/genzz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="mailto:support@genzzlibrary.com">Contact Us</a>
+            <a href="/cdn-cgi/l/email-protection#a7d4d2d7d7c8d5d3e7c0c2c9ddddcbcec5d5c6d5de89c4c8ca">Contact Us</a>
         </div>
         <p>Made with ❤️ by GenZZ-Coders | Video by Vecteezy</p>
     </footer>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'939101f91ec5b097',t:'MTc0NjEyMDYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
