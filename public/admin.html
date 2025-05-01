@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         defaultSrc: ['self'],
-        scriptSrc: ['self', 'https://cdn.jsdelivr.net', 'https://www.googletagmanager.com'],
+        scriptSrc: ['self', 'https://cdn.jsdelivr.net', 'https://telegram.org', 'https://www.googletagmanager.com'],
         styleSrc: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
-        imgSrc: ['self', 'data:', 'https://*.cloudfront.net', 'https://via.placeholder.com', 'https://imagedelivery.net'],
-        connectSrc: ['self', 'https://genzz-backend.onrender.com'],
+        imgSrc: ['self', 'data:', 'https://*.cloudfront.net', 'https://*.amazon.com', 'https://via.placeholder.com', 'https://imagedelivery.net', 'https://booksfy.in', 'https://imgv2-2-f.scribdassets.com'],
+        connectSrc: ['self', 'https://genzz-backend.onrender.com', 'https://linkcent.in'],
         fontSrc: ['self', 'https://fonts.gstatic.com'],
         mediaSrc: ['self', 'https://static.vecteezy.com']
     ">
@@ -120,8 +120,8 @@
         }
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+            border-color: #f97316;
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
         }
         #cover-preview {
             max-width: 150px;
@@ -130,23 +130,23 @@
             margin-top: 0.5rem;
             display: none;
         }
-        .btn-submit, .btn-logout {
+        .btn-submit, .btn-logout, .btn-access {
             display: inline-block;
             border-radius: 50px;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
             padding: 0.75rem 2rem;
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
-            color: #fff;
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
             border: none;
             cursor: pointer;
         }
-        .btn-submit:hover, .btn-logout:hover {
+        .btn-submit:hover, .btn-logout:hover, .btn-access:hover {
             transform: scale(1.05);
-            background: linear-gradient(90deg, #2563eb, #1e40af);
+            background: linear-gradient(90deg, #eab308, #ea580c);
         }
         .books-list {
             margin-top: 2rem;
@@ -207,7 +207,7 @@
             background: linear-gradient(135deg, #1e3a8a, #1e40af);
             color: #ffffff;
         }
-        .dark-mode .admin-form, .dark-mode .book-item {
+        .dark-mode .admin-form, .dark-mode .book-item, .dark-mode #chatbot-window {
             background: rgba(30, 30, 30, 0.95);
             color: #ffffff;
         }
@@ -217,15 +217,106 @@
         .dark-mode .book-item h5, .dark-mode .form-group label {
             color: #60a5fa;
         }
+        .dark-mode .chatbot-message.user {
+            background: #4b5563;
+            color: #ffffff;
+        }
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        #chatbot-button {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #chatbot-button:hover {
+            transform: scale(1.1);
+        }
+        #chatbot-window {
+            display: none;
+            width: 300px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #chatbot-header {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            padding: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-align: center;
+        }
+        #chatbot-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: 'Inter', sans-serif;
+        }
+        #chatbot-input {
+            display: flex;
+            border-top: 1px solid #e5e7eb;
+        }
+        #chatbot-input input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px;
+            font-family: 'Inter', sans-serif;
+            background: transparent;
+            color: inherit;
+        }
+        #chatbot-input input:focus {
+            outline: none;
+        }
+        #chatbot-input button {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        .chatbot-message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .chatbot-message.bot {
+            background: #f97316;
+            color: #ffffff;
+            margin-left: auto;
+        }
+        .chatbot-message.user {
+            background: #e5e7eb;
+            color: #1f2937;
+            margin-right: auto;
+        }
         footer {
             padding: 1rem;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            background: linear-gradient(135deg, #facc15, #f97316);
             text-align: center;
             font-family: 'Poppins', sans-serif;
-            color: #fff;
+            color: #1e40af;
         }
         .dark-mode footer {
-            background: linear-gradient(135deg, #2563eb, #1e40af);
+            background: linear-gradient(135deg, #eab308, #ea580c);
         }
         .footer-links {
             display: flex;
@@ -234,13 +325,16 @@
             margin-bottom: 1rem;
         }
         .footer-links a {
-            color: #fff;
+            color: #1e40af;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
+        .dark-mode .footer-links a {
+            color: #60a5fa;
+        }
         .footer-links a:hover {
-            color: #bfdbfe;
+            color: #1e40af;
         }
     </style>
     <script>
@@ -248,10 +342,52 @@
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
+        // Error troubleshooting database
+        const errors = {
+            'cover image upload nahi hua': {
+                reason: 'Image upload failed due to invalid file format, size limit exceeded, or server error.',
+                solution: 'Ensure the file is JPG/PNG, under 5MB, and check your internet connection. Try again or contact support on Telegram: https://t.me/genzcoders1'
+            },
+            'book add nahi hui': {
+                reason: 'Book addition failed due to missing fields, invalid PDF link, or server error.',
+                solution: 'Fill all required fields (title, author, PDF link, class, exam). Ensure PDF link is a valid Google Drive URL. Try again or contact support.'
+            },
+            'server error': {
+                reason: 'Server is down, overloaded, or there’s a network issue.',
+                solution: 'Wait a few minutes and retry. Check your internet connection. If the issue persists, contact support on Telegram.'
+            },
+            'invalid csrf token': {
+                reason: 'CSRF token is missing or invalid, possibly due to session timeout or network interruption.',
+                solution: 'Log out and log in again via home.html chatbot using /admin. Clear browser cache if the issue continues.'
+            },
+            'books load nahi hui': {
+                reason: 'Failed to fetch books due to server error or network issue.',
+                solution: 'Check your internet connection and refresh the page. If the issue persists, contact support on Telegram.'
+            },
+            'failed to add book': {
+                reason: 'Server rejected the book addition due to validation errors or database issue.',
+                solution: 'Check all fields for correct data (e.g., valid URL for PDF). Ensure server is running and try again.'
+            }
+        };
+
         function sanitizeInput(input) {
             const div = document.createElement('div');
             div.textContent = input;
             return div.innerHTML;
+        }
+
+        async function getCsrfToken() {
+            try {
+                const response = await fetch(`${BASE_API_URL}/api/csrf-token`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                return data.csrfToken;
+            } catch (error) {
+                console.error('Error fetching CSRF token:', error);
+                return null;
+            }
         }
 
         async function checkAdminAccess() {
@@ -266,7 +402,35 @@
                 });
                 return false;
             }
-            return true;
+
+            try {
+                const csrfToken = await getCsrfToken();
+                if (!csrfToken) {
+                    throw new Error('CSRF token fetch failed');
+                }
+                const response = await fetch(`${BASE_API_URL}/api/validate-admin`, {
+                    method: 'GET',
+                    headers: { 'X-CSRF-Token': csrfToken },
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Admin validation failed');
+                }
+                return true;
+            } catch (error) {
+                console.error('Admin validation error:', error);
+                Swal.fire({
+                    title: 'Access Denied!',
+                    text: 'Bhai, admin session expire ho gaya ya invalid hai!',
+                    icon: 'error',
+                    confirmButtonText: 'Back to Home'
+                }).then(() => {
+                    localStorage.removeItem('isAdmin');
+                    window.location.href = './home.html';
+                });
+                return false;
+            }
         }
 
         async function loadBooks() {
@@ -279,18 +443,172 @@
                     const item = document.createElement('div');
                     item.className = 'book-item';
                     item.innerHTML = `
-                        <img src="${book.coverUrl}" alt="${book.title}">
+                        <img src="${book.image_url}" alt="${book.title}">
                         <div>
                             <h5>${book.title}</h5>
                             <p>Author: ${book.author}</p>
                             <p>Class: ${book.class} | Exam: ${book.exam}</p>
+                            <button class="btn-delete" data-id="${book.id}">Delete</button>
                         </div>
                     `;
                     booksList.appendChild(item);
                 });
+
+                // Add delete button listeners
+                document.querySelectorAll('.btn-delete').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        clickSound.play();
+                        const bookId = button.dataset.id;
+                        const csrfToken = await getCsrfToken();
+                        if (!csrfToken) {
+                            Swal.fire('Error!', 'Security issue, bhai! Try again.', 'error');
+                            return;
+                        }
+                        try {
+                            const response = await fetch(`${BASE_API_URL}/api/books/${bookId}`, {
+                                method: 'DELETE',
+                                headers: { 'X-CSRF-Token': csrfToken },
+                                credentials: 'include'
+                            });
+                            if (response.ok) {
+                                Swal.fire('Success!', 'Book delete ho gayi!', 'success');
+                                loadBooks();
+                            } else {
+                                const result = await response.json();
+                                Swal.fire('Error!', result.error || 'Book delete nahi hui, bhai!', 'error');
+                            }
+                        } catch (error) {
+                            console.error('Delete book error:', error);
+                            Swal.fire('Error!', 'Server error, bhai! Baad mein try kar.', 'error');
+                        }
+                    });
+                });
             } catch (error) {
                 console.error('Error loading books:', error);
                 Swal.fire('Error!', 'Books load nahi hui, bhai!', 'error');
+            }
+        }
+
+        function addChatbotMessage(message, isBot = false) {
+            const messages = document.getElementById('chatbot-messages');
+            const div = document.createElement('div');
+            div.className = `chatbot-message ${isBot ? 'bot' : 'user'}`;
+            div.innerHTML = sanitizeInput(message);
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function handleChatbotInput() {
+            const input = document.getElementById('chatbot-input-text');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addChatbotMessage(message);
+            input.value = '';
+
+            if (message.toLowerCase() === '/manage') {
+                addChatbotMessage(`
+                    📚 **Admin Management Guide** 📚
+                    1. **Books Upload Karne Ka Tareeka**:
+                       - "Add New Book" form mein details bharo:
+                         - Title: Book ka naam.
+                         - Author: Lekhak ka naam.
+                         - Cover Image: JPG/PNG file (optional).
+                         - PDF Link: Google Drive ka shareable link.
+                         - Class: All, 10th, 11th, 12th mein se chuno.
+                         - Exam: All, Board, JEE, NEET mein se chuno.
+                       - "Add Book" button pe click karo.
+                       - Success message aayega agar book add hui.
+                    2. **Website Ke Features**:
+                       - **Book List**: Home page pe books ka grid, search bar se filter karo.
+                       - **Dark Mode**: Top right toggle se switch karo.
+                       - **Chatbot**: Home pe /admin se login, yahan queries bhejo.
+                       - **Admin Panel**: Books add/delete karo, list dekho.
+                       - **Key Validation**: Users ke liye access key chahiye.
+                    3. **Tips**:
+                       - PDF link shareable hona chahiye (Google Drive se "Anyone with link").
+                       - Image size chhota rakho (<5MB) for faster upload.
+                       - Issue ho toh Telegram pe ping karo: https://t.me/genzcoders1
+                `, true);
+                return;
+            }
+
+            if (message.toLowerCase() === '/help') {
+                addChatbotMessage(`
+                    🆘 **Admin Chatbot Help** 🆘
+                    Available Commands:
+                    - **/manage**: Books upload aur website features ki info.
+                    - **/troubleshoot <error>**: Error ka reason aur solution (e.g., /troubleshoot book add nahi hui).
+                    - **/help**: Yeh help message.
+                    Other Queries:
+                    - Naam set karo: "Name: TeraNaam"
+                    - Query ya feedback bhejo, team ko forward hoga.
+                `, true);
+                return;
+            }
+
+            if (message.toLowerCase().startsWith('/troubleshoot')) {
+                const query = message.slice(13).trim().toLowerCase();
+                if (!query) {
+                    addChatbotMessage('Bhai, error message ya keyword daal (e.g., /troubleshoot book add nahi hui)', true);
+                    return;
+                }
+
+                let found = false;
+                for (const [error, { reason, solution }] of Object.entries(errors)) {
+                    if (error.includes(query) || query.includes(error)) {
+                        addChatbotMessage(`
+                            ⚠️ **Error: ${error}** ⚠️
+                            **Reason**: ${reason}
+                            **Solution**: ${solution}
+                        `, true);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    addChatbotMessage(`
+                        😕 **Error Nahi Mila** 😕
+                        Tera error database mein nahi hai. Exact error message daal ke try kar.
+                        Ya Telegram pe team se baat kar: https://t.me/genzcoders1
+                    `, true);
+                }
+                return;
+            }
+
+            const nameMatch = message.match(/^Name:\s*(.+)$/i);
+            if (nameMatch) {
+                localStorage.setItem('chatbotName', nameMatch[1]);
+                addChatbotMessage('Naam save ho gaya! Ab query ya feedback daal, bhai.', true);
+                return;
+            }
+
+            const name = localStorage.getItem('chatbotName') || 'Anonymous';
+            try {
+                const csrfToken = await getCsrfToken();
+                if (!csrfToken) {
+                    addChatbotMessage('Security issue, bhai! Try again ya Telegram pe contact kar.', true);
+                    return;
+                }
+                const response = await fetch(`${BASE_API_URL}/api/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({ name, message, _csrf: csrfToken }),
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    addChatbotMessage('Query bhej di, bhai! Team jaldi reply karegi. 😊', true);
+                } else {
+                    addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar!`, true);
+                }
+            } catch (error) {
+                console.error('Error submitting query:', error);
+                addChatbotMessage('Server error, bhai. Thodi der baad try kar ya Telegram pe chill kar! 😎', true);
             }
         }
 
@@ -347,23 +665,30 @@
                     return;
                 }
 
-                let coverUrl = '';
+                const csrfToken = await getCsrfToken();
+                if (!csrfToken) {
+                    Swal.fire('Error!', 'Security issue, bhai! Try again.', 'error');
+                    return;
+                }
+
+                let image_url = '';
                 if (cover) {
                     const formData = new FormData();
-                    formData.append('cover', cover);
+                    formData.append('source', cover);
+                    formData.append('key', 'your_freeimage_api_key'); // Replace with actual FREEIMAGE_API_KEY
                     try {
-                        const uploadResponse = await fetch(`${BASE_API_URL}/api/upload-cover`, {
+                        const uploadResponse = await fetch('https://freeimage.host/api/1/upload', {
                             method: 'POST',
                             body: formData
                         });
                         const uploadResult = await uploadResponse.json();
-                        if (!uploadResult.success) {
-                            throw new Error(uploadResult.error);
+                        if (!uploadResult.image || !uploadResult.image.url) {
+                            throw new Error(uploadResult.error || 'Image upload failed');
                         }
-                        coverUrl = uploadResult.coverUrl;
+                        image_url = uploadResult.image.url;
                     } catch (error) {
                         console.error('Image upload error:', error);
-                        Swal.fire('Error!', 'Cover image upload nahi hua, bhai!', 'error');
+                        Swal.fire('Error!', 'Cover image upload nahi hua, bhai! Try again.', 'error');
                         return;
                     }
                 }
@@ -371,8 +696,12 @@
                 try {
                     const response = await fetch(`${BASE_API_URL}/api/books`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, author, coverUrl, pdfLink, class: classType, exam })
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken
+                        },
+                        body: JSON.stringify({ title, author, link: pdfLink, image_url, class: classType, exam, _csrf: csrfToken }),
+                        credentials: 'include'
                     });
                     const result = await response.json();
                     if (result.success) {
@@ -389,8 +718,20 @@
                 }
             });
 
-            document.getElementById('logout').addEventListener('click', function () {
+            document.getElementById('logout').addEventListener('click', async function () {
                 clickSound.play();
+                try {
+                    const csrfToken = await getCsrfToken();
+                    if (csrfToken) {
+                        await fetch(`${BASE_API_URL}/api/logout`, {
+                            method: 'POST',
+                            headers: { 'X-CSRF-Token': csrfToken },
+                            credentials: 'include'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
                 localStorage.removeItem('isAdmin');
                 Swal.fire({
                     title: 'Logged Out!',
@@ -403,7 +744,26 @@
                 });
             });
 
-            document.querySelectorAll('.btn-submit, .btn-logout').forEach(button => {
+            document.getElementById('chatbot-button').addEventListener('click', function () {
+                clickSound.play();
+                const window = document.getElementById('chatbot-window');
+                window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
+                if (window.style.display === 'flex') {
+                    addChatbotMessage('Welcome, bhai! /manage se books upload aur website info le, /troubleshoot se error fix kar, ya /help type kar.', true);
+                }
+            });
+            document.getElementById('chatbot-input-text').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    clickSound.play();
+                    handleChatbotInput();
+                }
+            });
+            document.getElementById('chatbot-input-button').addEventListener('click', function () {
+                clickSound.play();
+                handleChatbotInput();
+            });
+
+            document.querySelectorAll('.btn-submit, .btn-logout, .btn-access').forEach(button => {
                 button.addEventListener('click', function (e) {
                     clickSound.play();
                     const rect = e.target.getBoundingClientRect();
@@ -413,7 +773,7 @@
                         fullScreen: { enable: false },
                         particles: {
                             number: { value: 20 },
-                            color: { value: ['#3b82f6', '#2563eb'] },
+                            color: { value: ['#facc15', '#f97316'] },
                             shape: { type: 'star' },
                             opacity: { value: 0.8, animation: { enable: true, minimumValue: 0, speed: 2 } },
                             size: { value: 5, random: true },
@@ -450,6 +810,9 @@
                     <img src="./assets/logo.png" alt="GenZZ Library Logo">
                 </div>
                 <div class="flex-space-x-4">
+                    <a href="https://t.me/genzcoders1" class="btn-access text-sm" target="_blank" rel="noopener noreferrer">
+                        <i class="bi bi-chat-dots-fill mr-1"></i> Join Gen-Z Channel 🚀
+                    </a>
                     <button id="logout" class="btn-logout">Logout</button>
                     <label class="relative inline-flex">
                         <input type="checkbox" id="darkModeToggle" class="sr-only peer">
@@ -492,6 +855,7 @@
                         <select id="class" required>
                             <option value="">Select Class</option>
                             <option value="all">All</option>
+                            <option value="10th">10th</option>
                             <option value="11th">11th</option>
                             <option value="12th">12th</option>
                         </select>
@@ -501,6 +865,7 @@
                         <select id="exam" required>
                             <option value="">Select Exam</option>
                             <option value="all">All</option>
+                            <option value="Board">Board</option>
                             <option value="JEE">JEE</option>
                             <option value="NEET">NEET</option>
                         </select>
@@ -514,10 +879,23 @@
             </div>
         </section>
     </main>
+    <div id="chatbot-container">
+        <button id="chatbot-button">
+            <i class="bi bi-chat-dots-fill" style="font-size: 24px;"></i>
+        </button>
+        <div id="chatbot-window" style="display: none; flex-direction: column;">
+            <div id="chatbot-header">GenZZ Admin Bot 😎</div>
+            <div id="chatbot-messages"></div>
+            <div id="chatbot-input">
+                <input type="text" id="chatbot-input-text" placeholder="Type your query...">
+                <button id="chatbot-input-button">Send</button>
+            </div>
+        </div>
+    </div>
     <footer>
         <div class="footer-links">
             <a href="https://t.me/genzcoders1" target="_blank" rel="noopener noreferrer">Join Telegram</a>
-            <a href="https://github.com/genzz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://github.com/genz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="mailto:support@genzzlibrary.com">Contact Us</a>
         </div>
         <p>Made with ❤️ by GenZZ-Coders | Video by Vecteezy</p>

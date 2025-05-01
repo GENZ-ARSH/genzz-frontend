@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
-        defaultSrc: ['self'],
-        scriptSrc: ['self', 'https://cdn.jsdelivr.net', 'https://telegram.org'],
-        styleSrc: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
-        imgSrc: ['self', 'data:', 'https://*.cloudfront.net', 'https://*.amazon.com', 'https://via.placeholder.com'],
-        connectSrc: ['self', 'https://genzz-backend.onrender.com', 'https://linkcent.in'],
-        fontSrc: ['self', 'https://fonts.gstatic.com'],
-        mediaSrc: ['self', 'https://static.vecteezy.com/system/resources/previews/024/670/480/mp4/abstract-bright-blue-dna-molecular-structure-animated-background-motion-graphic-design-medical-clip-ultra-hd-4k-3840x2160-free-video.mp4']
+        default-src 'self';
+        script-src 'self' https://cdn.jsdelivr.net https://telegram.org https://www.googletagmanager.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        img-src 'self' data: https://*.cloudfront.net https://*.amazon.com https://via.placeholder.com https://imagedelivery.net https://upload.wikimedia.org https://github.githubassets.com;
+        connect-src 'self' https://genzz-backend.onrender.com https://linkcent.in;
+        font-src 'self' https://fonts.gstatic.com;
+        media-src 'self' https://static.vecteezy.com;
     ">
     <title>GenZZ Library - Access 🔑</title>
     <link rel="icon" href="./assets/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -25,7 +26,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(135deg, #bfdbfe, #60a5fa); /* Fallback gradient */
+            background: linear-gradient(135deg, #bfdbfe, #60a5fa);
             font-family: 'Inter', sans-serif;
             position: relative;
             overflow-x: hidden;
@@ -38,27 +39,25 @@
             height: 100%;
             object-fit: cover;
             z-index: -1;
-            opacity: 0.5; /* Subtle effect */
+            opacity: 0.5;
         }
         .header-section {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-            background: rgba(255, 255, 255, 0.1); /* Slightly transparent for contrast */
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
         }
         .container {
             max-width: 1280px;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 1rem;
-            padding-right: 1rem;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .logo-container {
-            display: inline-block;
+        .logo-container img {
+            width: 160px;
+            height: 60px;
         }
         .flex-space-x-4 {
             display: flex;
@@ -70,16 +69,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-top: 1.25rem;
-            padding-bottom: 1.25rem;
+            padding: 1.25rem 0;
         }
         .access-card {
             padding: 1.5rem;
-            margin-left: 1rem;
-            margin-right: 1rem;
+            margin: 0 1rem;
             width: 100%;
             max-width: 28rem;
-            background: rgba(255, 255, 255, 0.95); /* Higher opacity for readability */
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -190,104 +187,39 @@
             width: 300px;
             height: 300px;
         }
-        footer {
-            padding: 1rem;
-            background: linear-gradient(135deg, #facc15, #f97316);
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            color: #1e40af;
-        }
-        .dark-mode footer {
-            background: linear-gradient(135deg, #eab308, #ea580c);
-            color: #ffffff;
-        }
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1rem;
-        }
-        .footer-links a {
-            color: #1e40af;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .dark-mode .footer-links a {
-            color: #60a5fa;
-        }
-        .footer-links a:hover {
-            color: #1e40af;
-        }
-        .relative {
-            position: relative;
-        }
-        .inline-flex {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-        .rounded-full {
-            border-radius: 9999px;
-        }
-        .peer:checked ~ .bg-blue-600 {
-            background-color: #2563eb;
-        }
-        .transition-colors {
-            transition: background-color 0.2s ease;
-        }
-        .w-11 {
-            width: 2.75rem;
-        }
-        .h-6 {
-            height: 1.5rem;
-        }
-        .bg-gray-200 {
-            background-color: #e5e7eb;
-        }
-        .absolute {
-            position: absolute;
-        }
-        .left-1 {
-            left: 0.25rem;
-        }
-        .top-1 {
-            top: 0.25rem;
-        }
-        .w-4 {
-            width: 1rem;
-        }
-        .h-4 {
-            height: 1rem;
-        }
-        .bg-white {
-            background-color: #ffffff;
-        }
-        .transition-transform {
-            transition: transform 0.2s ease;
-        }
-        .peer:checked ~ .translate-x-5 {
-            transform: translateX(1.25rem);
-        }
-        .text-xs {
-            font-size: 0.75rem;
-        }
-        .peer-checked\:hidden {
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f97316;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
             display: none;
         }
-        .peer-checked\:block {
-            display: block;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
+        .relative { position: relative; }
+        .inline-flex { display: inline-flex; align-items: center; cursor: pointer; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        .rounded-full { border-radius: 9999px; }
+        .transition-colors { transition: background-color 0.2s ease; }
+        .w-11 { width: 2.75rem; }
+        .h-6 { height: 1.5rem; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .absolute { position: absolute; }
+        .left-1 { left: 0.25rem; }
+        .top-1 { top: 0.25rem; }
+        .w-4 { width: 1rem; }
+        .h-4 { height: 1rem; }
+        .bg-white { background-color: #ffffff; }
+        .transition-transform { transition: transform 0.2s ease; }
+        .peer:checked ~ .translate-x-5 { transform: translateX(1.25rem); }
+        .text-xs { font-size: 0.75rem; }
+        .peer-checked\:hidden { display: none; }
+        .peer-checked\:block { display: block; }
         .dark-mode {
             background: linear-gradient(135deg, #1e3a8a, #1e40af);
             color: #ffffff;
@@ -299,51 +231,474 @@
         .dark-mode .header-section {
             background: rgba(30, 30, 30, 0.1);
         }
+        .dark-mode footer {
+            background: linear-gradient(135deg, #eab308, #ea580c);
+            color: #ffffff;
+        }
+        .dark-mode .footer-badges a {
+            color: #60a5fa;
+        }
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        #chatbot-button {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        #chatbot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.5);
+            background: linear-gradient(90deg, #eab308, #ea580c);
+        }
+        #chatbot-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+        #chatbot-button:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        #chatbot-window {
+            display: none;
+            width: 320px;
+            height: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #chatbot-header {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            padding: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-align: center;
+        }
+        #chatbot-messages {
+            flex-grow: 1;
+            padding: 12px;
+            overflow-y: auto;
+            font-family: 'Inter', sans-serif;
+        }
+        #chatbot-input {
+            display: flex;
+            border-top: 1px solid #e5e7eb;
+        }
+        #chatbot-input input {
+            flex-grow: 1;
+            border: none;
+            padding: 12px;
+            font-family: 'Inter', sans-serif;
+            background: transparent;
+            color: inherit;
+        }
+        #chatbot-input input:focus {
+            outline: none;
+        }
+        #chatbot-input button {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        .chatbot-message {
+            margin: 6px 0;
+            padding: 10px;
+            border-radius: 12px;
+            max-width: 85%;
+        }
+        .chatbot-message.bot {
+            background: #f97316;
+            color: #ffffff;
+            margin-left: auto;
+        }
+        .chatbot-message.user {
+            background: #e5e7eb;
+            color: #1f2937;
+            margin-right: auto;
+        }
+        .dark-mode #chatbot-window {
+            background: rgba(30, 30, 30, 0.95);
+            color: #ffffff;
+        }
+        .dark-mode .chatbot-message.user {
+            background: #4b5563;
+            color: #ffffff;
+        }
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: #1e40af;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+        }
+        .badge img {
+            width: 28px;
+            height: 28px;
+            margin-right: 0.6rem;
+        }
+        .dark-mode .badge {
+            background: #4b5563;
+            color: #60a5fa;
+        }
     </style>
     <script>
         const BASE_API_URL = 'https://genzz-backend.onrender.com';
         const HOME_URL = '/home.html';
-        const ADMIN_PASSWORD = 'mango'; // Hardcoded for simplicity
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
+        // FAQ database
+        const faqs = {
+            'how to generate key': {
+                question: 'How do I generate an access key?',
+                answer: 'Click "24 Hour Access" ya "48 Hour Access" button. Key banega aur library khul jayegi. Internet check kar, agar nahi chala toh Telegram pe ping kar: https://t.me/genzcoders1'
+            },
+            'how to download': {
+                question: 'How do I download books?',
+                answer: 'Library mein key ke baad book ka PDF link click kar. Google Drive khulega, waha download button dabao. PDF reader app rakhna. Issue ho toh Telegram pe chill: https://t.me/genzcoders1'
+            },
+            'key not working': {
+                question: 'Why is my access key not working?',
+                answer: 'Key expire ho sakta hai (24 ya 48 hours). Naya key generate kar. Internet check kar ya cookies clear kar. Phir bhi issue? Telegram pe bol: https://t.me/genzcoders1'
+            },
+            'what is genzz library': {
+                question: 'What is GenZZ Library?',
+                answer: 'GenZZ Library ek free platform hai for 10th-12th, Board, JEE, NEET ke study materials. Secure key se access karo aur updates ke liye Telegram join karo: https://t.me/genzcoders1'
+            },
+            'is it free': {
+                question: 'Is GenZZ Library free?',
+                answer: 'Bilku free, bhai! Bas key generate karo secure access ke liye. No charges, promise! Support ke liye Telegram join kar: https://t.me/genzcoders1'
+            },
+            'how to contact support': {
+                question: 'How do I contact support?',
+                answer: 'Telegram channel join karo: https://t.me/genzcoders1 ya email karo: support@genzzlibrary.com. Telegram pe jaldi reply milta hai, try kar!'
+            },
+            'books not loading': {
+                question: 'Why are books not loading?',
+                answer: 'Internet check karo ya page refresh karo. Key expire ho gaya toh naya banaye. Issue rahe toh Telegram pe bataye: https://t.me/genzcoders1'
+            },
+            'how to access admin': {
+                question: 'How do I access the admin panel?',
+                answer: 'Sirf authorized admins ke liye. Footer pe triple-click karo ya home page ke chatbot mein /admin type karo aur password daalo. Queries ke liye Telegram pe contact: https://t.me/genzcoders1'
+            },
+            'how to join telegram': {
+                question: 'How do I join the Telegram community?',
+                answer: 'Group mein join karo: https://t.me/genzzthinks ya channel pe aao: https://t.me/genzcoders1. Updates aur support ke liye perfect hai!'
+            },
+            'how to suggest books': {
+                question: 'Can I suggest books for the library?',
+                answer: 'Haan, bhai! Telegram group mein suggestion daal do: https://t.me/genzzthinks ya owner ko directly bol: @just_arsh1. Hum jaldi review karenge.'
+            },
+            'safe to use': {
+                question: 'Is GenZZ Library safe to use?',
+                answer: '100% safe, bro! Secure keys aur CSRF protection hai. Privacy ka full dhyaan rakhte hain. Doubt ho toh Telegram pe clarify kar: https://t.me/genzcoders1'
+            },
+            'lost access': {
+                question: 'I lost access to the library, what now?',
+                answer: 'Key expire ho gaya hoga. Naya key generate karo iss page se. Cookies clear karo ya browser change karo. Issue ho toh Telegram pe bol: https://t.me/genzcoders1'
+            }
+        };
+
+        // Telegram links
+        const telegramLinks = {
+            group: 'https://t.me/genzzthinks',
+            channel: 'https://t.me/genzcoders1',
+            owner: '@just_arsh1'
+        };
+
+        // Sanitize input to prevent XSS
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        // Generate access key
+        async function generateKey(duration) {
+            try {
+                clickSound.play();
+                document.querySelector('.loader').style.display = 'block';
+                const response = await fetch(`${BASE_API_URL}/api/generate-key`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        duration,
+                        userId: uuidv4(),
+                        url: HOME_URL
+                    }),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                document.querySelector('.loader').style.display = 'none';
+                if (!response.ok || result.error) {
+                    throw new Error(result.error || 'Key generate nahi hua, bhai!');
+                }
+
+                window.location.href = result.shortUrl;
+            } catch (error) {
+                document.querySelector('.loader').style.display = 'none';
+                console.error('Key generation error:', error.message);
+                Swal.fire('Error!', `Key generate nahi hua: ${error.message}. Try again, ladle!`, 'error');
+            }
+        }
+
+        // Add chatbot message
+        function addChatbotMessage(message, isBot = false) {
+            const messages = document.getElementById('chatbot-messages');
+            const div = document.createElement('div');
+            div.className = `chatbot-message ${isBot ? 'bot' : 'user'}`;
+            div.innerHTML = sanitizeInput(message);
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Handle chatbot input
+        async function handleChatbotInput() {
+            const input = document.getElementById('chatbot-input-text');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addChatbotMessage(message);
+            input.value = '';
+
+            const lowerMessage = message.toLowerCase();
+
+            if (lowerMessage === '/auth') {
+                const result = await Swal.fire({
+                    title: 'Special Access 😎',
+                    html: `<input type="password" id="auth-password" class="swal2-input" placeholder="Pass daal, ladle!">`,
+                    confirmButtonText: 'Access Karo, Boss!',
+                    showCancelButton: true,
+                    cancelButtonText: 'Nahi, Chhod Do',
+                    backdrop: `
+                        rgba(0,0,123,0.4)
+                        url("https://sweetalert2.github.io/images/nyan-cat.gif")
+                        left top
+                        no-repeat
+                    `,
+                    customClass: { popup: 'animated bounceIn', confirmButton: 'btn-access' },
+                    preConfirm: async () => {
+                        const password = sanitizeInput(document.getElementById('auth-password').value);
+                        if (!password) {
+                            Swal.showValidationMessage('Password toh daal, bhai!');
+                            return false;
+                        }
+                        try {
+                            const response = await fetch(`${BASE_API_URL}/api/auth`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ password }),
+                                credentials: 'include'
+                            });
+                            const result = await response.json();
+                            if (result.success) return true;
+                            Swal.showValidationMessage(result.error || 'Galat password, ladle!');
+                            return false;
+                        } catch (error) {
+                            console.error('Auth error:', error);
+                            Swal.showValidationMessage('Server error, bhai! Baad mein try kar.');
+                            return false;
+                        }
+                    }
+                });
+
+                if (result.isConfirmed) {
+                    clickSound.play();
+                    Swal.fire({
+                        title: 'Access Mil Gaya! 😎',
+                        text: 'Ab library mein jaa raha hai!',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = './home.html';
+                    });
+                } else {
+                    addChatbotMessage('Access cancel kiya. Key generate kar ya Telegram pe chill: https://t.me/genzcoders1', true);
+                }
+                return;
+            }
+
+            if (lowerMessage === '/links') {
+                addChatbotMessage(`
+                    📢 **GenZZ Community Links** 📢
+                    - Telegram Group: ${telegramLinks.group}
+                    - Telegram Channel: ${telegramLinks.channel}
+                    - Owner: ${telegramLinks.owner}
+                    Join karo for updates aur support! 😎
+                `, true);
+                return;
+            }
+
+            if (lowerMessage === '/contact') {
+                addChatbotMessage(`
+                    📩 **Contact Us** 📩
+                    Owner se direct baat karo: ${telegramLinks.owner}
+                    Ya Telegram group join karo: ${telegramLinks.group}
+                    Fast response guaranteed! 🚀
+                `, true);
+                return;
+            }
+
+            if (lowerMessage === '/help') {
+                addChatbotMessage(`
+                    🆘 **Chatbot Help** 🆘
+                    Commands:
+                    - **/links**: Telegram group, channel, aur owner ke links.
+                    - **/contact**: Owner se direct contact karo.
+                    - **/auth**: Special access without key (password required).
+                    - **/help**: Yeh help message.
+                    Ask anything like "how to generate key" ya set name: "Name: TeraNaam"
+                `, true);
+                return;
+            }
+
+            const nameMatch = message.match(/^Name:\s*(.+)$/i);
+            if (nameMatch) {
+                localStorage.setItem('chatbotName', nameMatch[1]);
+                addChatbotMessage('Naam save ho gaya, bhai! Ab query puchh ya /links check kar.', true);
+                return;
+            }
+
+            let found = false;
+            for (const [key, faq] of Object.entries(faqs)) {
+                if (lowerMessage.includes(key)) {
+                    addChatbotMessage(`
+                        ❓ **${faq.question}** ❓
+                        ${faq.answer}
+                    `, true);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                const name = localStorage.getItem('chatbotName') || 'Anonymous';
+                try {
+                    const response = await fetch(`${BASE_API_URL}/api/reviews`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, message }),
+                        credentials: 'include'
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        addChatbotMessage(`
+                            Query bhej di, bhai! Team jaldi reply karegi. 😊
+                            Try asking specific questions like "how to generate key" ya check /links for community!
+                        `, true);
+                    } else {
+                        addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar ya Telegram pe bol: ${telegramLinks.channel}`, true);
+                    }
+                } catch (error) {
+                    console.error('Query submission error:', error);
+                    addChatbotMessage(`Server error, bhai. Thodi der baad try kar ya Telegram group mein chill: ${telegramLinks.group}`, true);
+                }
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Apply dark mode
+            // Dark mode toggle
             const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
             if (darkModeEnabled) {
                 document.body.classList.add('dark-mode');
                 document.getElementById('darkModeToggle').checked = true;
             }
             document.getElementById('darkModeToggle').addEventListener('change', function () {
-                try {
+                clickSound.play();
+                document.body.classList.toggle('dark-mode', this.checked);
+                localStorage.setItem('darkMode', this.checked ? 'enabled' : 'disabled');
+            });
+
+            // Click sound and particle effects for buttons
+            document.querySelectorAll('.btn-access, .btn-info, .badge, #chatbot-button').forEach(button => {
+                button.addEventListener('click', function (e) {
                     clickSound.play();
-                    if (this.checked) {
-                        document.body.classList.add('dark-mode');
-                        localStorage.setItem('darkMode', 'enabled');
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        localStorage.setItem('darkMode', 'disabled');
-                    }
-                } catch (error) {
-                    console.error('Dark mode toggle error:', error);
-                    Swal.fire('Error!', 'Failed to toggle dark mode.', 'error');
-                }
+                    const rect = e.target.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    tsParticles.load('sparkles-' + Date.now(), {
+                        fullScreen: { enable: false },
+                        particles: {
+                            number: { value: 20 },
+                            color: { value: ['#facc15', '#f97316'] },
+                            shape: { type: 'star' },
+                            opacity: { value: 0.8, animation: { enable: true, minimumValue: 0, speed: 2 } },
+                            size: { value: 5, random: true },
+                            move: {
+                                enable: true,
+                                speed: 10,
+                                direction: 'none',
+                                outModes: { default: 'destroy' }
+                            }
+                        },
+                        emitters: {
+                            position: { x, y },
+                            rate: { quantity: 20, delay: 0 }
+                        }
+                    });
+                });
             });
 
-            // Add click sound to footer links
-            document.querySelectorAll('.footer-links a').forEach(link => {
-                link.addEventListener('click', () => clickSound.play());
-            });
-
-            // Triple-click footer for password prompt
+            // Triple-click footer for admin login
             let clickCount = 0;
             let clickTimer = null;
-            document.getElementById('footer').addEventListener('click', function () {
+            document.getElementById('footer').addEventListener('click', async function () {
                 clickCount++;
                 if (clickCount === 1) {
-                    clickTimer = setTimeout(() => {
-                        clickCount = 0; // Reset if not triple-clicked within 1 second
-                    }, 1000);
+                    clickTimer = setTimeout(() => clickCount = 0, 1000);
                 }
                 if (clickCount === 3) {
                     clearTimeout(clickTimer);
@@ -362,126 +717,94 @@
                             left top
                             no-repeat
                         `,
-                        customClass: {
-                            popup: 'animated bounceIn',
-                            confirmButton: 'btn-access'
-                        },
-                        preConfirm: () => {
-                            const password = document.getElementById('admin-password').value;
+                        customClass: { popup: 'animated bounceIn', confirmButton: 'btn-access' },
+                        preConfirm: async () => {
+                            const password = sanitizeInput(document.getElementById('admin-password').value);
                             if (!password) {
                                 Swal.showValidationMessage('Password toh daal, ladle!');
                                 return false;
                             }
-                            if (password === ADMIN_PASSWORD) {
-                                return true;
-                            } else {
-                                Swal.showValidationMessage('Galat password, bhai!');
+                            try {
+                                const response = await fetch(`${BASE_API_URL}/api/admin-login`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ password }),
+                                    credentials: 'include'
+                                });
+                                const result = await response.json();
+                                if (result.success) return true;
+                                Swal.showValidationMessage(result.error || 'Galat password, bhai!');
+                                return false;
+                            } catch (error) {
+                                Swal.showValidationMessage('Server error, bhai!');
                                 return false;
                             }
                         }
                     }).then(result => {
                         if (result.isConfirmed) {
                             clickSound.play();
-                            localStorage.setItem('directAccess', 'success');
+                            localStorage.setItem('isAdmin', 'true');
                             Swal.fire({
-                                title: 'Access Mil Gaya! 😎',
-                                text: 'Ab home page pe jaa raha hai!',
+                                title: 'Admin Access Mil Gaya! 😎',
+                                text: 'Ab admin panel pe jaa raha hai!',
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
                             }).then(() => {
-                                window.location.href = './home.html';
+                                window.location.href = './admin.html';
                             });
                         }
                     });
                 }
             });
-        });
 
-        // Sanitize input
-        function sanitizeInput(input) {
-            const div = document.createElement('div');
-            div.textContent = input;
-            return div.innerHTML;
-        }
-
-        // Fetch CSRF token
-        async function getCsrfToken() {
-            try {
-                const response = await fetch(`${BASE_API_URL}/api/csrf-token`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                return data.csrfToken;
-            } catch (error) {
-                console.error('Error fetching CSRF token:', error);
-                return null;
-            }
-        }
-
-        async function generateKey(duration) {
-            try {
+            // Chatbot toggle
+            document.getElementById('chatbot-button').addEventListener('click', function () {
                 clickSound.play();
-                Swal.fire({
-                    title: 'Generating Key 🔑',
-                    text: 'Please wait...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                const csrfToken = await getCsrfToken();
-                if (!csrfToken) {
-                    throw new Error('Failed to fetch CSRF token');
+                const window = document.getElementById('chatbot-window');
+                window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
+                if (window.style.display === 'flex') {
+                    addChatbotMessage(`
+                        Yo bhai, welcome to GenZZ Chatbot! 😎
+                        Ask anything like "how to generate key" ya try commands:
+                        - /links for Telegram group, channel, aur owner
+                        - /contact to reach the boss
+                        - /auth for special access
+                        - /help for all commands
+                    `, true);
                 }
+            });
 
-                const response = await fetch(`${BASE_API_URL}/api/generate-key`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': csrfToken
-                    },
-                    body: JSON.stringify({
-                        duration,
-                        userId: uuidv4(),
-                        url: HOME_URL
-                    }),
-                    credentials: 'include'
-                });
-
-                const result = await response.json();
-                if (!response.ok || result.error) {
-                    throw new Error(result.error || `HTTP ${response.status}: Failed to generate key`);
+            // Chatbot input handling
+            document.getElementById('chatbot-input-text').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    clickSound.play();
+                    handleChatbotInput();
                 }
-
-                Swal.close();
-                window.location.href = result.shortUrl;
-            } catch (error) {
-                console.error('Key generation error:', error.message);
-                Swal.fire('Error!', `Failed to generate key: ${error.message}. Please try again.`, 'error');
-            }
-        }
+            });
+            document.getElementById('chatbot-input-button').addEventListener('click', function () {
+                clickSound.play();
+                handleChatbotInput();
+            });
+        });
     </script>
 </head>
 <body>
     <video id="background-video" autoplay loop muted playsinline>
         <source src="https://static.vecteezy.com/system/resources/previews/024/670/480/mp4/abstract-bright-blue-dna-molecular-structure-animated-background-motion-graphic-design-medical-clip-ultra-hd-4k-3840x2160-free-video.mp4" type="video/mp4">
-        <!-- Host your own slow-motion book/DNA video and update the src -->
         Your browser does not support the video tag.
     </video>
     <header class="header-section">
         <div class="container">
             <nav>
                 <div class="logo-container">
-                    <img src="./assets/logo.png" alt="GenZZ Library Logo" style="width: 160px; height: 60px;">
+                    <img src="./assets/logo.png" alt="GenZZ Library Logo">
                 </div>
                 <div class="flex-space-x-4">
-                    <a href="https://t.me/genzcoders1" class="btn-access text-sm" target="_blank" rel="noopener noreferrer">
+                    <a href="https://t.me/genzcoders1" class="btn-access text-sm" target="_blank" rel="noopener noreferrer" aria-label="Join Telegram">
                         <i class="bi bi-chat-dots-fill mr-1"></i> Join Gen-Z Channel 🚀
                     </a>
-                    <label class="relative inline-flex">
+                    <label class="relative inline-flex" aria-label="Toggle dark mode">
                         <input type="checkbox" id="darkModeToggle" class="sr-only peer">
                         <div class="w-11 h-6 bg-gray-200 rounded-full peer transition-colors">
                             <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 flex items-center justify-center text-xs">
@@ -499,25 +822,51 @@
             <h2>Unlock GenZZ Access 🔑</h2>
             <p>Get secure access for 24 or 48 hours! ✨</p>
             <div class="flex-col-gap-3">
-                <button onclick="generateKey('24hr')" class="btn-access">
+                <button onclick="generateKey('24hr')" class="btn-access" aria-label="Generate 24-hour access key">
                     <i class="bi bi-clock mr-2"></i> 24 Hour Access ⏰
                 </button>
-                <button onclick="generateKey('48hr')" class="btn-access">
+                <button onclick="generateKey('48hr')" class="btn-access" aria-label="Generate 48-hour access key">
                     <i class="bi bi-clock mr-2"></i> 48 Hour Access ⏳
                 </button>
-                <a href="https://t.me/genzcoders1" class="btn-info" target="_blank" rel="noopener noreferrer">
+                <a href="https://t.me/genzcoders1" class="btn-info" target="_blank" rel="noopener noreferrer" aria-label="Learn how to generate key">
                     <i class="bi bi-info-circle mr-2"></i> How to Generate Key
                 </a>
             </div>
+            <div class="loader"></div>
         </div>
     </main>
+    <div id="chatbot-container">
+        <button id="chatbot-button">
+            <i class="bi bi-chat-dots-fill" style="font-size: 24px;"></i>
+        </button>
+        <div id="chatbot-window" style="display: none; flex-direction: column;">
+            <div id="chatbot-header">GenZZ Chatbot 😎</div>
+            <div id="chatbot-messages"></div>
+            <div id="chatbot-input">
+                <input type="text" id="chatbot-input-text" placeholder="Ask anything...">
+                <button id="chatbot-input-button">Send</button>
+            </div>
+        </div>
+    </div>
     <footer id="footer">
-        <div class="footer-links">
-            <a href="https://t.me/genzcoders1" target="_blank" rel="noopener noreferrer">Join Telegram</a>
-            <a href="https://github.com/genzz-library" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="mailto:support@genzzlibrary.com">Contact Us</a>
+        <div class="footer-badges">
+            <a href="https://t.me/genzzthinks" class="badge" target="_blank" rel="noopener noreferrer" aria-label="Join Telegram Group">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Group"> Group
+            </a>
+            <a href="https://t.me/genzcoders1" class="badge" target="_blank" rel="noopener noreferrer" aria-label="Join Telegram Channel">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Channel"> Channel
+            </a>
+            <a href="https://github.com/genzz-library" class="badge" target="_blank" rel="noopener noreferrer" aria-label="Visit GitHub">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub"> GitHub
+            </a>
+            <a href="https://www.instagram.com/genzzcoders" class="badge" target="_blank" rel="noopener noreferrer" aria-label="Follow on Instagram">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram"> Instagram
+            </a>
+            <a href="/cdn-cgi/l/email-protection#bc8f898c8c938e88bc9b9992868690959e8e9d8e85d29f9391" class="badge" aria-label="Contact Us">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg" alt="Email"> Email
+            </a>
         </div>
         <p>Made with ❤️ by GenZZ-Coders</p>
     </footer>
-</body>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9390030168a553b2',t:'MTc0NjExMDE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

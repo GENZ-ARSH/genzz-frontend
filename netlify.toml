@@ -1,4 +1,11 @@
 [build]
-  base = "."
   publish = "public"
-  command = ""
+  command = "npm install"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://genzz-library.netlify.app"
+    Access-Control-Allow-Methods = "GET, POST, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-CSRF-Token"
+    Access-Control-Allow-Credentials = "true"

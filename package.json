@@ -1,10 +1,14 @@
 {
-  "name": "genzz-frontend",
+  "name": "genzz-library",
   "version": "1.0.0",
-  "description": "GenZZ PDF Library Frontend",
+  "description": "GenZZ Library Frontend",
   "scripts": {
-    "start": "echo 'Static site, no start script needed'"
+    "start": "npx serve -s public",
+    "build": "cp -r public/* ./dist && echo 'Build complete'"
   },
-  "author": "ARSH TYAGI",
-  "license": "MIT"
+  "author": "GenZZ Coders",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.3"
+  }
 }
