@@ -4,29 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
-        defaultSrc: ['self'],
-        scriptSrc: ['self', 'https://cdn.jsdelivr.net', 'https://telegram.org', 'https://www.googletagmanager.com'],
-        styleSrc: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
-        imgSrc: ['self', 'data:', 'https://*.cloudfront.net', 'https://*.amazon.com', 'https://via.placeholder.com', 'https://imagedelivery.net', 'https://booksfy.in', 'https://imgv2-2-f.scribdassets.com'],
-        connectSrc: ['self', 'https://genzz-backend.onrender.com', 'https://linkcent.in'],
-        fontSrc: ['self', 'https://fonts.gstatic.com'],
-        mediaSrc: ['self', 'https://static.vecteezy.com']
+        default-src: ['self'];
+        script-src: ['self', 'https://cdn.jsdelivr.net', 'https://telegram.org', 'https://www.googletagmanager.com'];
+        style-src: ['self', 'unsafe-inline', 'https://fonts.googleapis.com'];
+        img-src: ['self', 'data:', 'https://*.cloudfront.net', 'https://*.amazon.com', 'https://via.placeholder.com', 'https://booksfy.in', 'https://imgv2-2-f.scribdassets.com', 'https://freeimage.host'];
+        connect-src: ['self', 'https://genzz-backend.onrender.com', 'https://linkcent.in', 'https://freeimage.host'];
+        font-src: ['self', 'https://fonts.gstatic.com'];
+        media-src: ['self', 'https://static.vecteezy.com'];
     ">
     <title>GenZZ Library - Home</title>
     <link rel="icon" href="./assets/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuidv4.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR-ID"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-YOUR-ID');
-    </script>
+    <!-- Remove Google Analytics if not used -->
     <style>
-        /* Existing styles from home.html remain unchanged */
         body {
             margin: 0;
             color: #1f2937;
@@ -110,6 +104,27 @@
             border-color: #f97316;
             box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
         }
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: #e5e7eb;
+            color: #1f2937;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+        }
         .books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -167,11 +182,25 @@
             transform: scale(1.05);
             background: linear-gradient(90deg, #eab308, #ea580c);
         }
+        .load-more {
+            display: block;
+            margin: 1rem auto;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            background: linear-gradient(90deg, #facc15, #f97316);
+            color: #1e40af;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .load-more:hover {
+            background: linear-gradient(90deg, #eab308, #ea580c);
+        }
         .relative { position: relative; }
         .inline-flex { display: inline-flex; align-items: center; cursor: pointer; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
         .rounded-full { border-radius: 9999px; }
-        .peer:checked ~ .bg-blue-600 { background-color: #2563eb; }
         .transition-colors { transition: background-color 0.2s ease; }
         .w-11 { width: 2.75rem; }
         .h-6 { height: 1.5rem; }
@@ -308,14 +337,20 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             transition: transform 0.3s ease;
+            animation: pulse 2s infinite ease-in-out;
         }
         #chatbot-button:hover {
             transform: scale(1.1);
         }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
         #chatbot-window {
             display: none;
-            width: 300px;
-            height: 400px;
+            width: 320px;
+            height: 450px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
@@ -329,14 +364,14 @@
         #chatbot-header {
             background: linear-gradient(90deg, #facc15, #f97316);
             color: #1e40af;
-            padding: 10px;
+            padding: 12px;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
             text-align: center;
         }
         #chatbot-messages {
             flex-grow: 1;
-            padding: 10px;
+            padding: 12px;
             overflow-y: auto;
             font-family: 'Inter', sans-serif;
         }
@@ -347,7 +382,7 @@
         #chatbot-input input {
             flex-grow: 1;
             border: none;
-            padding: 10px;
+            padding: 12px;
             font-family: 'Inter', sans-serif;
             background: transparent;
             color: inherit;
@@ -359,16 +394,16 @@
             background: linear-gradient(90deg, #facc15, #f97316);
             color: #1e40af;
             border: none;
-            padding: 10px;
+            padding: 12px 16px;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
         }
         .chatbot-message {
-            margin: 5px 0;
-            padding: 8px;
-            border-radius: 10px;
-            max-width: 80%;
+            margin: 6px 0;
+            padding: 10px;
+            border-radius: 12px;
+            max-width: 85%;
         }
         .chatbot-message.bot {
             background: #f97316;
@@ -416,152 +451,94 @@
     </style>
     <script>
         const BASE_API_URL = 'https://genzz-backend.onrender.com';
+        const TELEGRAM_CHANNEL = 'https://t.me/genzcoders1';
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
-        // Static book data extracted from index.html
-        const staticBooks = [
-            {
-                title: "Concept of Physics - Part 1 & 2 By H.C. Verma (Set of 2 books)2025-26",
-                class: "all",
-                exam: "all",
-                coverUrl: "https://booksfy.in/cdn/shop/files/81XNZcwmvQL._SY466_720x.jpg?v=1744208066",
-                pdfLink: "https://drive.google.com/drive/folders/19Qqr5Q-QIpOgiJlAzvfL3dpJ7gy2SWZc",
-                author: "H.C. Verma"
+        // FAQ database
+        const faqs = {
+            'how to download': {
+                question: 'How do I download books?',
+                answer: 'Library mein book ka PDF link click kar. Google Drive khulega, waha download button dabao. Issue ho toh Telegram pe ping kar: ' + TELEGRAM_CHANNEL
             },
-            {
-                title: "R.D. Sharma Mathematics For Class 12 with MCQs in Mathematics CBSE Exam",
-                class: "12th",
-                exam: "all",
-                coverUrl: "data:image/webp;base64,...", // Truncated base64 image
-                pdfLink: "https://drive.google.com/drive/folders/1s4a5wPy-LxX-SdZxM3Q3tC3zI9f4oq7C",
-                author: "R.D. Sharma"
+            'key not working': {
+                question: 'Why is my access key not working?',
+                answer: 'Key expire ho sakta hai (24 ya 48 hours). Naya key generate kar. Internet check kar ya cookies clear kar. Phir bhi issue? Telegram pe bol: ' + TELEGRAM_CHANNEL
             },
-            {
-                title: "Lakshya For JEE Main & Advanced Class 12 Mathematics Modules with Solutions",
-                class: "12th",
-                exam: "JEE",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189_targets/94e47ae5-37e2-4e11-989a-d8dea1bf8881.png",
-                pdfLink: "https://drive.google.com/drive/folders/1g0HbYev2fHuHed56xFWuxn6nri-jQcH-",
-                author: "Unknown Author"
+            'what is genzz library': {
+                question: 'What is GenZZ Library?',
+                answer: 'GenZZ Library ek free platform hai for 10th-12th, Board, JEE, NEET ke study materials. Secure key se access karo aur updates ke liye Telegram join karo: ' + TELEGRAM_CHANNEL
             },
-            {
-                title: "Lakshya For JEE Main & Advanced Class 12 Physics Modules with Solutions",
-                class: "12th",
-                exam: "JEE",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189_targets/94e47ae5-37e2-4e11-989a-d8dea1bf8881.png",
-                pdfLink: "https://drive.google.com/drive/folders/1tHywg5e8KU-gqaRqtfWC5041kso1PPE5",
-                author: "Unknown Author"
+            'is it free': {
+                question: 'Is GenZZ Library free?',
+                answer: 'Bilku free, bhai! Bas key generate karo secure access ke liye. No charges! Support ke liye Telegram join kar: ' + TELEGRAM_CHANNEL
             },
-            {
-                title: "Arjuna for NEET Class 11th Zoology Modules with Solutions",
-                class: "11th",
-                exam: "NEET",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/a946956d-c803-48e4-8932-40dd1d30ee3e.png",
-                pdfLink: "https://drive.google.com/drive/folders/1fXe8T1Tvhef9EHzGu75qc4Ezjw4REKef",
-                author: "Unknown Author"
-            },
-            {
-                title: "Arjuna for NEET Class 11th Botany Modules with Solutions",
-                class: "11th",
-                exam: "NEET",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/a946956d-c803-48e4-8932-40dd1d30ee3e.png",
-                pdfLink: "https://drive.google.com/drive/folders/1N18tjDboqiWy__W3yha1wPCw1VgtTTyO",
-                author: "Unknown Author"
-            },
-            {
-                title: "Arjuna for NEET Class 11th Chemistry Modules with Solutions",
-                class: "11th",
-                exam: "NEET",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/a946956d-c803-48e4-8932-40dd1d30ee3e.png",
-                pdfLink: "https://drive.google.com/drive/folders/1oAsZuEO5khBNvs-gAaPTyh1IPWbyLxxx",
-                author: "Unknown Author"
-            },
-            {
-                title: "Arjuna for NEET Class 11th Physics Modules with Solutions",
-                class: "11th",
-                exam: "NEET",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/a946956d-c803-48e4-8932-40dd1d30ee3e.png",
-                pdfLink: "https://drive.google.com/drive/folders/1Y9xMj21xEf3lIXiWPn8l1Om5TdP9NmEU?usp=sharing",
-                author: "Unknown Author"
-            },
-            {
-                title: "PW Arjuna For JEE Main & Advanced Class 11 Chemistry Modules with Solutions Combo",
-                class: "11th",
-                exam: "JEE",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/42178cbc-1934-4b5e-a839-cd7011a3e2df.png",
-                pdfLink: "https://drive.google.com/drive/folders/1cYHE8zZSiXE8oSX1cbcUCZBYFdyIn-ux?usp=sharing",
-                author: "Unknown Author"
-            },
-            {
-                title: "PW Arjuna For JEE Main & Advanced Class 11 Physics Modules with Solutions Combo",
-                class: "11th",
-                exam: "JEE",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8831b5ff-8489-4701-a3a1-6da10eba9c92.png",
-                pdfLink: "https://drive.google.com/drive/folders/1wNVqa4LEWu8_whknsX6-mEsXxPjiE40N?usp=sharing",
-                author: "Unknown Author"
-            },
-            {
-                title: "PW Arjuna For JEE Main & Advanced Class 11 Mathematics Modules with Solutions Combo",
-                class: "11th",
-                exam: "JEE",
-                coverUrl: "https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8691f6ca-2ea2-4cbf-8b2e-9c82fc53bf4a.png",
-                pdfLink: "https://drive.google.com/drive/folders/16mNjp9kALYgtj85k2sehRTjB8TTr1AQn?usp=sharing",
-                author: "Unknown Author"
-            },
-            {
-                title: "Arihant iSucceed Hindi-B — Sample Papers Latest (2024-25) edition",
-                class: "10th",
-                exam: "Board",
-                coverUrl: "https://m.media-amazon.com/images/I/71G1tHgBECL._SY385_.jpg",
-                pdfLink: "https://drive.google.com/file/d/1JT73_l4wsRjJ82mOsTlcl1ZJwKNJBX-a/view?usp=drive_link",
-                author: "Unknown Author"
-            },
-            {
-                title: "Kriti Sharma 1'o Clack REVISION BOOK - MATHS",
-                class: "10th",
-                exam: "Board",
-                coverUrl: "https://m.media-amazon.com/images/I/51HdQ-2w9GL._SX342_SY445_.jpg",
-                pdfLink: "https://drive.google.com/file/d/1ArUJOHb-QMCfczunvxYjdGMJe0rJZzHo/view?usp=drive_link",
-                author: "Kriti Sharma"
-            },
-            {
-                title: "Kriti Sharma 1'o clock Revision Book - SST",
-                class: "10th",
-                exam: "Board",
-                coverUrl: "https://imgv2-2-f.scribdassets.com/img/document/808355992/298x396/5debde49a3/1743706895",
-                pdfLink: "https://drive.google.com/file/d/1Mit-R7-lK-te5y54CPdvCawxM-XYxdwT/view?usp=drive_link",
-                author: "Kriti Sharma"
+            'how to contact support': {
+                question: 'How do I contact support?',
+                answer: 'Telegram channel join karo: ' + TELEGRAM_CHANNEL + ' ya email karo: support@genzzlibrary.com. Telegram pe jaldi reply milta hai!'
             }
-        ];
+        };
 
+        // Telegram links
+        const telegramLinks = {
+            group: 'https://t.me/genzzthinks',
+            channel: TELEGRAM_CHANNEL,
+            owner: '@just_arsh1'
+        };
+
+        // Sanitize Input
         function sanitizeInput(input) {
             const div = document.createElement('div');
             div.textContent = input;
             return div.innerHTML;
         }
 
-        async function getCsrfToken() {
-            try {
-                const response = await fetch(`${BASE_API_URL}/api/csrf-token`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                return data.csrfToken;
-            } catch (error) {
-                console.error('Error fetching CSRF token:', error);
-                return null;
-            }
+        // Debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
         }
 
+        // Get CSRF Token
+        async function getCsrfToken() {
+            let retries = 3;
+            while (retries) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    const response = await fetch(`${BASE_API_URL}/api/csrf-token`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        signal: controller.signal,
+                    });
+                    clearTimeout(timeoutId);
+                    const data = await response.json();
+                    return data.csrfToken;
+                } catch (error) {
+                    retries -= 1;
+                    console.error('Error fetching CSRF token:', error);
+                    if (!retries) return null;
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+            return null;
+        }
+
+        // Validate Key
         async function validateKey() {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
                 const response = await fetch(`${BASE_API_URL}/api/validate-key`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: controller.signal,
                 });
+                clearTimeout(timeoutId);
                 const result = await response.json();
                 if (!response.ok || !result.success) {
                     throw new Error(result.error || 'Token validation failed');
@@ -572,10 +549,11 @@
             }
         }
 
+        // Prompt Admin Login
         async function promptAdminLogin(isInitialLoad = false) {
             const csrfToken = await getCsrfToken();
             if (!csrfToken) {
-                Swal.fire('Error!', 'Failed to initialize security.', 'error');
+                Swal.fire('Error!', 'Failed to initialize security. Try again or contact support on Telegram: ' + TELEGRAM_CHANNEL, 'error');
                 return false;
             }
 
@@ -587,6 +565,7 @@
                 `,
                 confirmButtonText: 'Login',
                 showCancelButton: true,
+                cancelButtonText: 'Cancel',
                 preConfirm: async () => {
                     const password = sanitizeInput(document.getElementById('admin-password').value);
                     const csrfToken = document.getElementById('csrf-token').value;
@@ -595,15 +574,19 @@
                         return false;
                     }
                     try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 5000);
                         const response = await fetch(`${BASE_API_URL}/api/admin-login`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-Token': csrfToken
+                                'X-CSRF-Token': csrfToken,
                             },
                             body: JSON.stringify({ password, _csrf: csrfToken }),
-                            credentials: 'include'
+                            credentials: 'include',
+                            signal: controller.signal,
                         });
+                        clearTimeout(timeoutId);
                         const result = await response.json();
                         if (result.success) {
                             return true;
@@ -613,10 +596,10 @@
                         }
                     } catch (error) {
                         console.error('Admin login fetch error:', error);
-                        Swal.showValidationMessage('Server error');
+                        Swal.showValidationMessage('Server error. Try again or contact: ' + TELEGRAM_CHANNEL);
                         return false;
                     }
-                }
+                },
             });
 
             if (result.isConfirmed) {
@@ -632,6 +615,7 @@
             return false;
         }
 
+        // Check Access
         async function checkAccess() {
             const isAdmin = localStorage.getItem('isAdmin') === 'true';
             const directAccess = localStorage.getItem('directAccess') === 'success';
@@ -650,7 +634,7 @@
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, I’m an admin',
-                cancelButtonText: 'No, I’m a user'
+                cancelButtonText: 'No, I’m a user',
             });
 
             if (isAdminAttempt.isConfirmed) {
@@ -672,7 +656,7 @@
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
-                }
+                },
             });
 
             try {
@@ -682,7 +666,7 @@
                     text: 'Welcome to the GenZZ Library! You can now download books.',
                     icon: 'success',
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
                 }).then(() => {
                     clickSound.play();
                     localStorage.setItem('pdflogin', 'success');
@@ -697,7 +681,7 @@
                     title: 'BHAI KEY GENERATE KRLE 😜',
                     text: 'Your key is invalid or expired. Generate a new one!',
                     icon: 'error',
-                    confirmButtonText: 'Go to Key Generator'
+                    confirmButtonText: 'Go to Key Generator',
                 }).then(() => {
                     localStorage.clear();
                     window.location.href = './index.html';
@@ -705,61 +689,70 @@
             }
         }
 
-        async function loadBooks() {
+        // Load Books
+        async function loadBooks(page = 1, limit = 12) {
             try {
-                // Fetch books from backend
-                let books = [];
-                try {
-                    const response = await fetch(`${BASE_API_URL}/api/books`);
-                    if (response.ok) {
-                        books = await response.json();
-                    }
-                } catch (error) {
-                    console.warn('Backend fetch failed, using static books:', error);
-                }
-
-                // Combine static books with backend books
-                const allBooks = [...staticBooks, ...books.map(book => ({
-                    _id: book._id,
-                    title: book.title,
-                    class: book.class,
-                    exam: book.exam,
-                    coverUrl: book.coverUrl,
-                    pdfLink: book.pdfLink,
-                    author: book.author || "Unknown Author"
-                }))];
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const response = await fetch(`${BASE_API_URL}/api/books?page=${page}&limit=${limit}`, {
+                    signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
+                const books = await response.json();
 
                 const booksGrid = document.querySelector('.books-grid');
-                booksGrid.innerHTML = '';
-                allBooks.forEach(book => {
+                books.forEach(book => {
                     const card = document.createElement('div');
                     card.className = 'book-card';
+                    card.dataset.id = book.id;
                     card.dataset.title = book.title;
-                    card.dataset.id = book._id || `static-${book.title.replace(/\s+/g, '-')}`;
                     card.dataset.class = book.class;
                     card.dataset.exam = book.exam;
+                    card.dataset.category = book.category || 'General';
                     card.innerHTML = `
-                        <img src="${book.coverUrl}" class="book-cover" alt="${book.title}">
+                        <img src="${book.image_url}" class="book-cover" alt="${book.title}">
                         <h5 class="book-title">${book.title}</h5>
                         <p class="book-author">${book.author}</p>
-                        <a href="${book.pdfLink}" target="_blank" class="btn-download">Download PDF</a>
+                        <a href="${book.link}" target="_blank" class="btn-download">Download PDF</a>
                     `;
                     booksGrid.appendChild(card);
                 });
+
+                // Show Load More button if more books exist
+                if (books.length === limit) {
+                    const loadMoreBtn = document.createElement('button');
+                    loadMoreBtn.className = 'load-more';
+                    loadMoreBtn.textContent = 'Load More';
+                    loadMoreBtn.addEventListener('click', () => {
+                        loadBooks(page + 1, limit);
+                        loadMoreBtn.remove();
+                    });
+                    booksGrid.after(loadMoreBtn);
+                }
             } catch (error) {
                 console.error('Error loading books:', error);
-                Swal.fire('Error!', 'Books load nahi hui, bhai!', 'error');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Books load nahi hui, bhai! Check internet ya Telegram pe bol: ' + TELEGRAM_CHANNEL,
+                    icon: 'error',
+                });
             }
         }
 
-        function filterBooks(query) {
+        // Filter Books
+        function filterBooks(query, classFilter = '', examFilter = '', categoryFilter = '') {
             const cards = document.querySelectorAll('.book-card');
             query = query.toLowerCase();
             cards.forEach(card => {
                 const title = card.dataset.title.toLowerCase();
                 const classType = card.dataset.class.toLowerCase();
                 const exam = card.dataset.exam.toLowerCase();
-                if (title.includes(query) || classType.includes(query) || exam.includes(query)) {
+                const category = card.dataset.category.toLowerCase();
+                const matchesQuery = query ? title.includes(query) : true;
+                const matchesClass = classFilter ? classType === classFilter.toLowerCase() : true;
+                const matchesExam = examFilter ? exam === examFilter.toLowerCase() : true;
+                const matchesCategory = categoryFilter ? category === categoryFilter.toLowerCase() : true;
+                if (matchesQuery && matchesClass && matchesExam && matchesCategory) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
@@ -767,6 +760,7 @@
             });
         }
 
+        // Add Chatbot Message
         function addChatbotMessage(message, isBot = false) {
             const messages = document.getElementById('chatbot-messages');
             const div = document.createElement('div');
@@ -776,6 +770,7 @@
             messages.scrollTop = messages.scrollHeight;
         }
 
+        // Handle Chatbot Input
         async function handleChatbotInput() {
             const input = document.getElementById('chatbot-input-text');
             const message = input.value.trim();
@@ -784,98 +779,131 @@
             addChatbotMessage(message);
             input.value = '';
 
-            if (message.toLowerCase() === '/admin') {
-                addChatbotMessage('Bhai, admin banne ke liye password daal! 🔒', true);
-                const csrfToken = await getCsrfToken();
-                if (!csrfToken) {
-                    addChatbotMessage('Security issue, bhai! Try again ya Telegram pe contact kar.', true);
-                    return;
-                }
+            const lowerMessage = message.toLowerCase();
 
-                const result = await Swal.fire({
-                    title: 'Admin Login 😎',
-                    html: `
-                        <input type="password" id="admin-password" class="swal2-input" placeholder="Password daal, ladle!">
-                        <input type="hidden" id="csrf-token" value="${csrfToken}">
-                    `,
-                    confirmButtonText: 'Login Karo, Boss!',
-                    showCancelButton: true,
-                    cancelButtonText: 'Nahi, Chhod Do',
-                    preConfirm: async () => {
-                        const password = sanitizeInput(document.getElementById('admin-password').value);
-                        const csrfToken = document.getElementById('csrf-token').value;
-                        if (!password) {
-                            Swal.showValidationMessage('Password toh daal, bhai!');
-                            return false;
-                        }
-                        try {
-                            const response = await fetch(`${BASE_API_URL}/api/admin-login`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-Token': csrfToken
-                                },
-                                body: JSON.stringify({ password, _csrf: csrfToken }),
-                                credentials: 'include'
-                            });
-                            const result = await response.json();
-                            if (result.success) {
-                                return true;
-                            } else {
-                                Swal.showValidationMessage(result.error || 'Galat password, ladle!');
-                                return false;
-                            }
-                        } catch (error) {
-                            console.error('Admin login fetch error:', error);
-                            Swal.showValidationMessage('Server error, bhai! Baad mein try kar.');
-                            return false;
-                        }
-                    }
-                });
-
-                if (result.isConfirmed) {
-                    clickSound.play();
-                    localStorage.setItem('isAdmin', 'true');
-                    addChatbotMessage('Bhai, tu toh admin hai! Redirecting to admin panel... 🚀', true);
-                    Swal.fire({
-                        title: 'Admin Access Mil Gaya! 😎',
-                        text: 'Ab admin panel mein jaa raha hai!',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = './admin.html';
-                    });
-                } else {
-                    addChatbotMessage('Admin login cancel kiya. Koi na, books dekh le! ��', true);
+            if (lowerMessage === '/admin') {
+                addChatbotMessage('Bhai, admin banne ke liye password daal! ��', true);
+                const adminSuccess = await promptAdminLogin();
+                if (!adminSuccess) {
+                    addChatbotMessage('Admin login cancel kiya. Koi na, books dekh le! 📚', true);
                 }
+                return;
+            }
+
+            if (lowerMessage === '/links') {
+                addChatbotMessage(`
+                    📢 **GenZZ Community Links** 📢
+                    - Telegram Group: ${telegramLinks.group}
+                    - Telegram Channel: ${telegramLinks.channel}
+                    - Owner: ${telegramLinks.owner}
+                    Join karo for updates aur support! 😎
+                `, true);
+                return;
+            }
+
+            if (lowerMessage === '/contact') {
+                addChatbotMessage(`
+                    📩 **Contact Us** 📩
+                    Owner se direct baat karo: ${telegramLinks.owner}
+                    Ya Telegram group join karo: ${telegramLinks.group}
+                    Fast response guaranteed! 🚀
+                `, true);
+                return;
+            }
+
+            if (lowerMessage === '/help') {
+                addChatbotMessage(`
+                    🆘 **Chatbot Help** 🆘
+                    Commands:
+                    - **/links**: Telegram group, channel, aur owner ke links.
+                    - **/contact**: Owner se direct contact karo.
+                    - **/admin**: Admin panel access (password required).
+                    - **/help**: Yeh help message.
+                    Ask anything like "how to download" ya set name: "Name: TeraNaam"
+                `, true);
                 return;
             }
 
             const nameMatch = message.match(/^Name:\s*(.+)$/i);
             if (nameMatch) {
                 localStorage.setItem('chatbotName', nameMatch[1]);
-                addChatbotMessage('Naam save ho gaya! Ab query ya feedback daal, bhai.', true);
+                addChatbotMessage('Naam save ho gaya, bhai! Ab query puchh ya /links check kar.', true);
                 return;
             }
 
-            const name = localStorage.getItem('chatbotName') || 'Anonymous';
-            try {
-                const response = await fetch(`${BASE_API_URL}/api/reviews`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, message })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    addChatbotMessage('Query bhej di, bhai! Team jaldi reply karegi. 😊', true);
-                } else {
-                    addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar, ladle!`, true);
+            let found = false;
+            for (const [key, faq] of Object.entries(faqs)) {
+                if (lowerMessage.includes(key)) {
+                    addChatbotMessage(`
+                        ❓ **${faq.question}** ❓
+                        ${faq.answer}
+                    `, true);
+                    found = true;
+                    break;
                 }
-            } catch (error) {
-                console.error('Error submitting query:', error);
-                addChatbotMessage('Server error, bhai. Thodi der baad try kar ya Telegram pe chill kar! 😎', true);
             }
+
+            if (!found) {
+                const name = localStorage.getItem('chatbotName') || 'Anonymous';
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    const response = await fetch(`${BASE_API_URL}/api/reviews`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, message }),
+                        credentials: 'include',
+                        signal: controller.signal,
+                    });
+                    clearTimeout(timeoutId);
+                    const result = await response.json();
+                    if (result.success) {
+                        addChatbotMessage(`
+                            Query bhej di, bhai! Team Telegram pe dekhegi: ${telegramLinks.channel}. 😊
+                            Try asking specific questions like "how to download" ya check /help!
+                        `, true);
+                    } else {
+                        addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar ya Telegram pe bol: ${telegramLinks.channel}`, true);
+                    }
+                } catch (error) {
+                    console.error('Query submission error:', error);
+                    addChatbotMessage(`Server error, bhai. Thodi der baad try kar ya Telegram group mein chill: ${telegramLinks.group}`, true);
+                }
+            }
+        }
+
+        // Initialize Filters
+        function initFilters() {
+            const filterContainer = document.createElement('div');
+            filterContainer.className = 'filter-buttons';
+            const filters = [
+                { type: 'class', values: ['10th', '11th', '12th', 'all'] },
+                { type: 'exam', values: ['Board', 'JEE', 'NEET', 'all'] },
+                { type: 'category', values: ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'General'] },
+            ];
+
+            filters.forEach(filter => {
+                filter.values.forEach(value => {
+                    const btn = document.createElement('button');
+                    btn.className = 'filter-btn';
+                    btn.dataset[filter.type] = value.toLowerCase();
+                    btn.textContent = value;
+                    btn.addEventListener('click', () => {
+                        const activeBtn = filterContainer.querySelector(`[data-${filter.type}].active`);
+                        if (activeBtn) activeBtn.classList.remove('active');
+                        btn.classList.add('active');
+                        filterBooks(
+                            document.getElementById('search').value,
+                            filterContainer.querySelector('[data-class].active')?.dataset.class || '',
+                            filterContainer.querySelector('[data-exam].active')?.dataset.exam || '',
+                            filterContainer.querySelector('[data-category].active')?.dataset.category || ''
+                        );
+                    });
+                    filterContainer.appendChild(btn);
+                });
+            });
+
+            document.querySelector('.search-bar').after(filterContainer);
         }
 
         document.addEventListener('DOMContentLoaded', async function () {
@@ -885,21 +913,12 @@
                 document.getElementById('darkModeToggle').checked = true;
             }
             document.getElementById('darkModeToggle').addEventListener('change', function () {
-                try {
-                    clickSound.play();
-                    if (this.checked) {
-                        document.body.classList.add('dark-mode');
-                        localStorage.setItem('darkMode', 'enabled');
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        localStorage.setItem('darkMode', 'disabled');
-                    }
-                } catch (error) {
-                    console.error('Dark mode toggle error:', error);
-                    Swal.fire('Error!', 'Failed to toggle dark mode.', 'error');
-                }
+                clickSound.play();
+                document.body.classList.toggle('dark-mode', this.checked);
+                localStorage.setItem('darkMode', this.checked ? 'enabled' : 'disabled');
             });
 
+            initFilters();
             checkAccess();
 
             document.getElementById('chatbot-button').addEventListener('click', function () {
@@ -907,9 +926,17 @@
                 const window = document.getElementById('chatbot-window');
                 window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
                 if (window.style.display === 'flex') {
-                    addChatbotMessage('Welcome, bhai! Name daal (e.g., "Name: John"), query bhej, ya /admin type kar admin banne ke liye.', true);
+                    addChatbotMessage(`
+                        Yo bhai, welcome to GenZZ Chatbot! 😎
+                        Ask anything like "how to download" ya try commands:
+                        - /links for Telegram group, channel, aur owner
+                        - /contact to reach the boss
+                        - /admin for admin access
+                        - /help for all commands
+                    `, true);
                 }
             });
+
             document.getElementById('chatbot-input-text').addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     clickSound.play();
@@ -921,9 +948,14 @@
                 handleChatbotInput();
             });
 
-            document.getElementById('search').addEventListener('input', function () {
-                filterBooks(this.value);
-            });
+            document.getElementById('search').addEventListener('input', debounce(function () {
+                filterBooks(
+                    this.value,
+                    document.querySelector('[data-class].active')?.dataset.class || '',
+                    document.querySelector('[data-exam].active')?.dataset.exam || '',
+                    document.querySelector('[data-category].active')?.dataset.category || ''
+                );
+            }, 300));
 
             document.querySelectorAll('.btn-download, .btn-access').forEach(button => {
                 button.addEventListener('click', async function (e) {
@@ -931,16 +963,18 @@
                     const bookCard = e.target.closest('.book-card');
                     if (bookCard) {
                         const bookId = bookCard.dataset.id;
-                        if (!bookId.startsWith('static-')) {
-                            try {
-                                await fetch(`${BASE_API_URL}/api/books/${bookId}/click`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    credentials: 'include'
-                                });
-                            } catch (error) {
-                                console.error('Error tracking click:', error);
-                            }
+                        try {
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 5000);
+                            await fetch(`${BASE_API_URL}/api/books/${bookId}/click`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                signal: controller.signal,
+                            });
+                            clearTimeout(timeoutId);
+                        } catch (error) {
+                            console.error('Error tracking click:', error);
                         }
                     }
 
@@ -960,12 +994,12 @@
                                 speed: 10,
                                 direction: 'none',
                                 outModes: { default: 'destroy' }
-                            }
+                            },
                         },
                         emitters: {
                             position: { x, y },
-                            rate: { quantity: 20, delay: 0 }
-                        }
+                            rate: { quantity: 20, delay: 0 },
+                        },
                     });
                 });
             });

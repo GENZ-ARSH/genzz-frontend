@@ -398,6 +398,15 @@
         const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
         clickSound.volume = 0.3;
 
+        // Debounce to prevent multiple clicks
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
         // FAQ database
         const faqs = {
             'how to generate key': {
@@ -464,11 +473,19 @@
             return div.innerHTML;
         }
 
-        // Generate access key
+        // Generate access key with timeout
         async function generateKey(duration) {
             try {
+                const button = document.getElementById(`btn-${duration}`);
+                button.disabled = true;
                 clickSound.play();
-                document.querySelector('.loader').style.display = 'block';
+                const loader = document.querySelector('.loader');
+                loader.style.display = 'block';
+
+                // 10s timeout for API call
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const response = await fetch(`${BASE_API_URL}/api/generate-key`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -477,20 +494,31 @@
                         userId: uuidv4(),
                         url: HOME_URL
                     }),
-                    credentials: 'include'
+                    credentials: 'include',
+                    signal: controller.signal
                 });
 
+                clearTimeout(timeoutId);
+                loader.style.display = 'none';
+                button.disabled = false;
+
                 const result = await response.json();
-                document.querySelector('.loader').style.display = 'none';
                 if (!response.ok || result.error) {
                     throw new Error(result.error || 'Key generate nahi hua, bhai!');
                 }
 
+                console.log('API Response:', result);
                 window.location.href = result.shortUrl;
             } catch (error) {
                 document.querySelector('.loader').style.display = 'none';
-                console.error('Key generation error:', error.message);
-                Swal.fire('Error!', `Key generate nahi hua: ${error.message}. Try again, ladle!`, 'error');
+                document.getElementById(`btn-${duration}`).disabled = false;
+                console.error('Key generation error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: `Key generate nahi hua: ${error.message}. Telegram pe ping kar: ${telegramLinks.channel}`,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
             }
         }
 
@@ -536,12 +564,16 @@
                             return false;
                         }
                         try {
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 5000);
                             const response = await fetch(`${BASE_API_URL}/api/auth`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ password }),
-                                credentials: 'include'
+                                credentials: 'include',
+                                signal: controller.signal
                             });
+                            clearTimeout(timeoutId);
                             const result = await response.json();
                             if (result.success) return true;
                             Swal.showValidationMessage(result.error || 'Galat password, ladle!');
@@ -584,7 +616,7 @@
 
             if (lowerMessage === '/contact') {
                 addChatbotMessage(`
-                    📩 **Contact Us** 📩
+                    📩 **Contact Us** ��
                     Owner se direct baat karo: ${telegramLinks.owner}
                     Ya Telegram group join karo: ${telegramLinks.group}
                     Fast response guaranteed! 🚀
@@ -627,17 +659,21 @@
             if (!found) {
                 const name = localStorage.getItem('chatbotName') || 'Anonymous';
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
                     const response = await fetch(`${BASE_API_URL}/api/reviews`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, message }),
-                        credentials: 'include'
+                        credentials: 'include',
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     const result = await response.json();
                     if (result.success) {
                         addChatbotMessage(`
-                            Query bhej di, bhai! Team jaldi reply karegi. 😊
-                            Try asking specific questions like "how to generate key" ya check /links for community!
+                            Query bhej di, bhai! Team Telegram pe dekhegi: ${telegramLinks.channel}. 😊
+                            Try asking specific questions like "how to generate key" ya check /links!
                         `, true);
                     } else {
                         addChatbotMessage(`Query bhejne mein error: ${result.error || 'Kuch toh gadbad hai'}. Fir se try kar ya Telegram pe bol: ${telegramLinks.channel}`, true);
@@ -662,7 +698,16 @@
                 localStorage.setItem('darkMode', this.checked ? 'enabled' : 'disabled');
             });
 
-            // Click sound and particle effects for buttons
+            // Debounced generateKey for buttons
+            const debouncedGenerateKey = debounce(generateKey, 300);
+            document.querySelectorAll('.btn-access').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const duration = e.target.getAttribute('aria-label').includes('24') ? '24hr' : '48hr';
+                    debouncedGenerateKey(duration);
+                });
+            });
+
+            // Click sound and particle effects
             document.querySelectorAll('.btn-access, .btn-info, .badge, #chatbot-button').forEach(button => {
                 button.addEventListener('click', function (e) {
                     clickSound.play();
@@ -692,7 +737,7 @@
                 });
             });
 
-            // Triple-click footer for admin login
+            // Triple-click footer
             let clickCount = 0;
             let clickTimer = null;
             document.getElementById('footer').addEventListener('click', async function () {
@@ -725,12 +770,16 @@
                                 return false;
                             }
                             try {
+                                const controller = new AbortController();
+                                const timeoutId = setTimeout(() => controller.abort(), 5000);
                                 const response = await fetch(`${BASE_API_URL}/api/admin-login`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ password }),
-                                    credentials: 'include'
+                                    credentials: 'include',
+                                    signal: controller.signal
                                 });
+                                clearTimeout(timeoutId);
                                 const result = await response.json();
                                 if (result.success) return true;
                                 Swal.showValidationMessage(result.error || 'Galat password, bhai!');
@@ -822,10 +871,10 @@
             <h2>Unlock GenZZ Access 🔑</h2>
             <p>Get secure access for 24 or 48 hours! ✨</p>
             <div class="flex-col-gap-3">
-                <button onclick="generateKey('24hr')" class="btn-access" aria-label="Generate 24-hour access key">
+                <button id="btn-24hr" class="btn-access" aria-label="Generate 24-hour access key">
                     <i class="bi bi-clock mr-2"></i> 24 Hour Access ⏰
                 </button>
-                <button onclick="generateKey('48hr')" class="btn-access" aria-label="Generate 48-hour access key">
+                <button id="btn-48hr" class="btn-access" aria-label="Generate 48-hour access key">
                     <i class="bi bi-clock mr-2"></i> 48 Hour Access ⏳
                 </button>
                 <a href="https://t.me/genzcoders1" class="btn-info" target="_blank" rel="noopener noreferrer" aria-label="Learn how to generate key">
@@ -862,11 +911,11 @@
             <a href="https://www.instagram.com/genzzcoders" class="badge" target="_blank" rel="noopener noreferrer" aria-label="Follow on Instagram">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram"> Instagram
             </a>
-            <a href="/cdn-cgi/l/email-protection#bc8f898c8c938e88bc9b9992868690959e8e9d8e85d29f9391" class="badge" aria-label="Contact Us">
+            <a href="mailto:support@genzzlibrary.com" class="badge" aria-label="Contact Us">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg" alt="Email"> Email
             </a>
         </div>
         <p>Made with ❤️ by GenZZ-Coders</p>
     </footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9390030168a553b2',t:'MTc0NjExMDE5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
