@@ -1,11 +1,34 @@
 [build]
+  # Directory where your site files are (public folder, as HTML files are in genzz-library/public)
   publish = "public"
-  command = "npm install"
+  # No build command needed for static HTML site
+  command = ""
 
+# Environment variables (optional)
+[build.environment]
+  NODE_ENV = "production"
+
+# Redirects for SPA-like behavior
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Custom headers for security and performance
 [[headers]]
   for = "/*"
   [headers.values]
-    Access-Control-Allow-Origin = "https://genzz-library.netlify.app"
-    Access-Control-Allow-Methods = "GET, POST, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization, X-CSRF-Token"
-    Access-Control-Allow-Credentials = "true"
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' https://cdn.jsdelivr.net https://telegram.org https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      img-src 'self' data: https://*.cloudfront.net https://*.amazon.com https://via.placeholder.com https://imagedelivery.net https://upload.wikimedia.org https://github.githubassets.com;
+      connect-src 'self' https://genzz-backend.onrender.com https://linkcent.in;
+      font-src 'self' https://fonts.gstatic.com;
+      media-src 'self' https://static.vecteezy.com;
+    """
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Cache-Control = "public, max-age=31536000"
